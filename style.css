@@ -404,7 +404,8 @@ footer {
     gap: 20px;
     padding: 0 12px;
   }
-   /* Scale down navbar padding and stack nicely on phones */
+
+  /* Scale down navbar padding and stack nicely on phones */
   .navbar {
     padding: 15px 4%;
     flex-direction: column;
