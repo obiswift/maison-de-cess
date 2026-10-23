@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Linen Throw Blanket | Maison de Cess</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Navigation Bar -->
+  <header class="navbar">
+    <div class="logo"><a href="index.html" style="text-decoration:none; color:inherit;">Maison de Cess</a></div>
+    <nav>
+      <ul>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="index.html#retail-shop">Shop</a></li>
+        <li><a href="index.html#wholesale">Wholesale</a></li>
+        <li><a class="cart-link" id="cartToggleBtn">🛒 Cart <span class="cart-badge" id="cartCount">0</span></a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <!-- Product Detail Section -->
+  <section class="product-detail-container">
+    
+    <!-- Left: Product Images Gallery -->
+    <div class="product-gallery">
+      <div class="main-image-placeholder">Main Product Image</div>
+      <div class="thumbnail-row">
+        <div class="thumb-placeholder">Thumb 1</div>
+        <div class="thumb-placeholder">Thumb 2</div>
+        <div class="thumb-placeholder">Thumb 3</div>
+      </div>
+    </div>
+
+    <!-- Right: Product Info & Purchase Options -->
+    <div class="product-info">
+      <h1>Linen Throw Blanket</h1>
+      <p class="category-tag">Home Accessories / Living</p>
+      
+      <!-- Customer Type Selector (Retail vs Wholesale) -->
+      <div class="buyer-toggle">
+        <label>Select Pricing Type:</label>
+        <div class="toggle-buttons">
+          <button type="button" class="toggle-btn active" id="retailTab">Retail Buyer</button>
+          <button type="button" class="toggle-btn" id="wholesaleTab">Wholesale Buyer</button>
+        </div>
+      </div>
+
+      <!-- Dynamic Price Display Box (KSh) -->
+      <div class="detail-price-box">
+        <div id="retailPricing">
+          <span class="price-large">KSh 5,500</span>
+          <span class="price-note">Single Unit Price • Free delivery over KSh 5,000</span>
+        </div>
+        <div id="wholesalePricing" style="display: none;">
+          <span class="price-large">KSh 2,800 / pc</span>
+          <span class="price-note">Wholesale Bulk Price • Minimum Order: 10 pieces</span>
+        </div>
+      </div>
+
+      <!-- Options (Color) -->
+      <div class="product-options">
+        <label for="color">Color:</label>
+        <select id="color">
+          <option value="natural">Natural Linen</option>
+          <option value="charcoal">Charcoal Gray</option>
+          <option value="olive">Olive Green</option>
+        </select>
+      </div>
+
+      <!-- Quantity Selector -->
+      <div class="product-options">
+        <label for="quantity">Quantity:</label>
+        <input type="number" id="quantity" value="1" min="1">
+      </div>
+
+      <!-- Action Button -->
+      <button class="btn primary-btn add-to-cart-action" id="detailAddToCartBtn">Add to Cart</button>
+
+      <!-- Description Details -->
+      <div class="product-description">
+        <h3>Product Details</h3>
+        <p>Crafted from 100% pure stonewashed linen, this throw blanket offers lightweight breathability and timeless texture. Perfect for living room styling or cozy evenings.</p>
+        <ul>
+          <li>Dimensions: 50" x 60"</li>
+          <li>Machine washable</li>
+          <li>Sustainably sourced and produced</li>
+        </ul>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Shopping Cart Drawer Overlay -->
+  <div class="cart-overlay" id="cartOverlay"></div>
+
+  <!-- Shopping Cart Sidebar Drawer -->
+  <div class="cart-drawer" id="cartDrawer">
+    <div class="cart-header">
+      <h3>Your Shopping Cart</h3>
+      <button class="close-cart" id="closeCartBtn">&times;</button>
+    </div>
+    <div class="cart-items" id="cartItemsContainer">
+      <p style="color: #777; text-align: center; margin-top: 20px;">Your cart is empty.</p>
+    </div>
+    <div class="cart-footer">
+      <div class="cart-total">
+        <span>Total:</span>
+        <span id="cartTotalPrice">KSh 0</span>
+      </div>
+      <button class="checkout-btn">Proceed to Checkout</button>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer>
+    <p>&copy; 2026 Maison de Cess. All rights reserved.</p>
+  </footer>
+
+  <!-- JavaScript for Interactive Retail vs Wholesale Toggle & Cart -->
+  <script>
+    const retailTab = document.getElementById('retailTab');
+    const wholesaleTab = document.getElementById('wholesaleTab');
+    const retailPricing = document.getElementById('retailPricing');
+    const wholesalePricing = document.getElementById('wholesalePricing');
+    const quantityInput = document.getElementById('quantity');
+
+    let isWholesale = false;
+
+    retailTab.addEventListener('click', function() {
+      retailTab.classList.add('active');
+      wholesaleTab.classList.remove('active');
+      retailPricing.style.display = 'block';
+      wholesalePricing.style.display = 'none';
+      quantityInput.min = 1;
+      quantityInput.value = 1;
+      isWholesale = false;
+    });
+
+    wholesaleTab.addEventListener('click', function() {
+      wholesaleTab.classList.add('active');
+      retailTab.classList.remove('active');
+      wholesalePricing.style.display = 'block';
+      retailPricing.style.display = 'none';
+      quantityInput.min = 10;
+      quantityInput.value = 10;
+      isWholesale = true;
+    });
+
+    // Cart Drawer logic
+    const cartToggleBtn = document.getElementById('cartToggleBtn');
+    const cartDrawer = document.getElementById('cartDrawer');
+    const cartOverlay = document.getElementById('cartOverlay');
+    const closeCartBtn = document.getElementById('closeCartBtn');
+    const cartCount = document.getElementById('cartCount');
+    const cartItemsContainer = document.getElementById('cartItemsContainer');
+    const cartTotalPrice = document.getElementById('cartTotalPrice');
+    const detailAddToCartBtn = document.getElementById('detailAddToCartBtn');
+
+    let cart = [];
+
+    cartToggleBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      cartDrawer.classList.add('open');
+      cartOverlay.classList.add('active');
+    });
+
+    closeCartBtn.addEventListener('click', () => {
+      cartDrawer.classList.remove('open');
+      cartOverlay.classList.remove('active');
+    });
+
+    cartOverlay.addEventListener('click', () => {
+      cartDrawer.classList.remove('open');
+      cartOverlay.classList.remove('active');
+    });
+
+    detailAddToCartBtn.addEventListener('click', () => {
+      const qty = parseInt(quantityInput.value) || 1;
+      const price = isWholesale ? 2800 : 5500;
+      const typeLabel = isWholesale ? ' (Wholesale)' : ' (Retail)';
+      
+      cart.push({ name: "Linen Throw Blanket" + typeLabel, price: price * qty, qty: qty });
+      updateCartUI();
+
+      cartDrawer.classList.add('open');
+      cartOverlay.classList.add('active');
+    });
+
+    function updateCartUI() {
+      cartCount.textContent = cart.reduce((acc, item) => acc + item.qty, 0);
+      if (cart.length === 0) {
+        cartItemsContainer.innerHTML = '<p style="color: #777; text-align: center; margin-top: 20px;">Your cart is empty.</p>';
+        cartTotalPrice.textContent = 'KSh 0';
+        return;
+      }
+
+      let total = 0;
+      cartItemsContainer.innerHTML = '';
+      cart.forEach((item, i) => {
+        total += item.price;
+        cartItemsContainer.innerHTML += `
+          <div class="cart-item">
+            <div>
+              <strong>${item.name}</strong><br>
+              <small>Qty: ${item.qty} • KSh ${item.price.toLocaleString()}</small>
+            </div>
+            <button onclick="removeItem(${i})" style="background:none; border:none; color:red; cursor:pointer;">Remove</button>
+          </div>
+        `;
+      });
+      cartTotalPrice.textContent = 'KSh ' + total.toLocaleString();
+    }
+
+    window.removeItem = function(index) {
+      cart.splice(index, 1);
+      updateCartUI();
+    }
+  </script>
+
+</body>
+</html>
