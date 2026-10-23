@@ -417,4 +417,14 @@ footer {
     flex-wrap: wrap;
     justify-content: center;
   }
+   /* Style and darken the search input text and placeholder */
+#productSearchInput {
+  color: #52343f !important; /* Darker text color when typing */
+  caret-color: #724e5b !important; /* Darker blinking cursor */
+}
+
+#productSearchInput::placeholder {
+  color: #a87e8a !important; /* Darker, clearer placeholder text */
+  opacity: 1 !important;
+}
 }
