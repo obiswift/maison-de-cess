@@ -12,9 +12,9 @@ app.use(express.json({ limit: '10mb' }));
 
 // Serve static frontend files from the root directory
 app.use(express.static(path.join(__dirname)));
-// Health Check Route
+// Serve index.html as the homepage
 app.get('/', (req, res) => {
-  res.send('Maison de Cess API is running smoothly!');
+  res.sendFile(path.join(__dirname, 'index.html'));
 });
 
 // --- PRODUCT API ROUTES ---
