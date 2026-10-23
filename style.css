@@ -3,10 +3,19 @@
    ========================================== */
 @media (max-width: 768px) {
   /* Fix container padding on mobile */
-  .admin-container, 
-  .container {
-    padding: 0 12px;
-    margin: 15px auto;
+   /* Scale down navbar padding and stack nicely on phones */
+  .navbar {
+    padding: 15px 4%;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .navbar nav ul {
+    gap: 15px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  
   }
 
   /* Stack admin grids and headers */
