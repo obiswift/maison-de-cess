@@ -1,4 +1,5 @@
 const express = require('express');
+const path = require('path');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const Product = require('./models/Product');
@@ -9,6 +10,8 @@ const app = express();
 app.use(cors());
 app.use(express.json({ limit: '10mb' }));
 
+// Serve static frontend files from the root directory
+app.use(express.static(path.join(__dirname)));
 // Health Check Route
 app.get('/', (req, res) => {
   res.send('Maison de Cess API is running smoothly!');
