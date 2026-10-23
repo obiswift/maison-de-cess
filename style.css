@@ -336,6 +336,7 @@ footer {
   color: #f2c4ce;
   font-size: 0.85rem;
 }
+
 /* ==========================================
    RESPONSIVE MOBILE STYLES
    ========================================== */
@@ -381,25 +382,26 @@ footer {
     padding: 20px;
     margin: 10px;
   }
-   /* Ensure containers scale nicely on mobile screens */
-.container, 
-.admin-container, 
-.hero-content, 
-.wholesale-container {
-  width: 100%;
-  max-width: 1200px;
-  padding-left: 16px;
-  padding-right: 16px;
-  margin-left: auto;
-  margin-right: auto;
-}
 
-/* Make grid cards responsive without fixed forcing */
-.category-grid, 
-.product-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 20px;
-  padding: 0 10px;
-}
+  /* Ensure containers scale nicely on mobile screens */
+  .container, 
+  .admin-container, 
+  .hero-content, 
+  .wholesale-container {
+    width: 100%;
+    max-width: 1200px;
+    padding-left: 16px;
+    padding-right: 16px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  /* Force single-column layout on mobile to prevent squashing */
+  .category-grid, 
+  .product-grid {
+    display: grid;
+    grid-template-columns: 1fr !important;
+    gap: 20px;
+    padding: 0 12px;
+  }
 }
