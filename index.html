@@ -56,11 +56,16 @@
   </section>
 
   <!-- Dynamic Featured Products Section -->
-<section class="products-section" id="retail-shop">
-  <div class="product-grid" id="userProductsGrid">
-    <!-- Dynamically populated from backend API -->
-  </div>
-</section>
+  <section class="products-section" id="retail-shop">
+    <!-- Product Search Bar -->
+    <div style="max-width: 400px; margin: 0 auto 35px auto;">
+      <input type="text" id="productSearchInput" placeholder="Search products or categories..." oninput="filterProducts()" style="width: 100%; padding: 14px 22px; border: 1px solid #f2c4ce; border-radius: 25px; font-size: 0.95rem; background: rgba(255, 255, 255, 0.9); outline: none; box-shadow: 0 4px 15px rgba(232, 180, 184, 0.15);">
+    </div>
+
+    <div class="product-grid" id="userProductsGrid">
+      <!-- Dynamically populated from backend API -->
+    </div>
+  </section>
 
   <!-- Wholesale Inquiry Section -->
   <section class="wholesale-section" id="wholesale">
@@ -80,6 +85,12 @@
       </form>
     </div>
   </section>
+
+  <!-- Image Zoom Modal -->
+  <div id="imageModal" style="display:none; position:fixed; z-index:2000; top:0; left:0; width:100%; height:100%; background:rgba(82,52,63,0.85); backdrop-filter:blur(6px); justify-content:center; align-items:center;">
+    <span onclick="closeImageModal()" style="position:absolute; top:25px; right:40px; color:#fff; font-size:45px; font-weight:bold; cursor:pointer; transition:color 0.3s;" onmouseover="this.style.color='#d47a8f'" onmouseout="this.style.color='#fff'">&times;</span>
+    <img id="modalImage" style="max-width:90%; max-height:85vh; border-radius:16px; box-shadow: 0 15px 40px rgba(0,0,0,0.4);">
+  </div>
 
   <!-- Cart Drawer & Overlay -->
   <div class="cart-overlay" id="cartOverlay"></div>
@@ -197,10 +208,11 @@
         console.error('Error fetching products:', err);
         products = [];
       }
-      renderStorefront();
+      renderProductsGrid(products);
+      renderCategories();
     }
 
-    function renderStorefront() {
+    function renderCategories() {
       userCategoriesGrid.innerHTML = '';
       wholesaleCategorySelect.innerHTML = '<option value="" disabled selected>Primary Interest</option>';
       categories.forEach(cat => {
@@ -212,14 +224,18 @@
         `;
         wholesaleCategorySelect.innerHTML += `<option value="${cat.toLowerCase()}">${cat}</option>`;
       });
+    }
 
+    function renderProductsGrid(list) {
       userProductsGrid.innerHTML = '';
-      if (products.length === 0) {
-        userProductsGrid.innerHTML = '<p style="grid-column: 1/-1; color:#8c6875; text-align:center;">No products available right now. Add products from your admin panel!</p>';
+      if (list.length === 0) {
+        userProductsGrid.innerHTML = '<p style="grid-column: 1/-1; color:#8c6875; text-align:center;">No matching products found.</p>';
         return;
       }
 
-      products.forEach((p, idx) => {
+      list.forEach((p) => {
+        // Find true index in the main products array for cart mapping
+        const originalIndex = products.findIndex(item => item._id === p._id || item.name === p.name);
         const imgSrc = p.image || 'https://via.placeholder.com/300x200/fbe8eb/a87e8a?text=Product+Image';
         const retail = p.price || p.retailPrice || 0;
         const wholesale = p.wholesalePrice || 0;
@@ -227,7 +243,7 @@
 
         userProductsGrid.innerHTML += `
           <div class="product-card float-on-hover">
-            <img src="${imgSrc}" style="width:100%; height:220px; object-fit:cover; border-radius:14px; margin-bottom:15px; background:#fbe8eb;" alt="${p.name}">
+            <img src="${imgSrc}" onclick="openImageModal('${imgSrc}')" style="width:100%; height:220px; object-fit:cover; border-radius:14px; margin-bottom:15px; background:#fbe8eb; cursor:pointer;" alt="${p.name}" title="Click to zoom">
             <h3>${p.name}</h3>
             <p class="category-tag">${p.category}</p>
             
@@ -236,11 +252,37 @@
               <span class="wholesale-price">Wholesale: KSh ${wholesale.toLocaleString()} (Min. ${moq} pcs)</span>
             </div>
             
-            <button class="add-to-cart-btn float-on-hover" type="button" onclick="addToCartEvent(${idx})">Add to Cart</button>
+            <button class="add-to-cart-btn float-on-hover" type="button" onclick="addToCartEvent(${originalIndex})">Add to Cart</button>
           </div>
         `;
       });
     }
+
+    // Search and Filter Function
+    function filterProducts() {
+      const query = document.getElementById('productSearchInput').value.toLowerCase();
+      const filtered = products.filter(p => 
+        p.name.toLowerCase().includes(query) || 
+        (p.category && p.category.toLowerCase().includes(query))
+      );
+      renderProductsGrid(filtered);
+    }
+
+    // Image Zoom Modal Functions
+    function openImageModal(url) {
+      const modal = document.getElementById('imageModal');
+      const modalImg = document.getElementById('modalImage');
+      modal.style.display = 'flex';
+      modalImg.src = url;
+    }
+
+    function closeImageModal() {
+      document.getElementById('imageModal').style.display = 'none';
+    }
+
+    document.getElementById('imageModal').addEventListener('click', (e) => {
+      if (e.target.id === 'imageModal') closeImageModal();
+    });
 
     const cartToggleBtn = document.getElementById('cartToggleBtn');
     const cartDrawer = document.getElementById('cartDrawer');
