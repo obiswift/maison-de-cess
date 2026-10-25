@@ -65,7 +65,7 @@
       <!-- Left Vertical Category Sidebar (Kilimall Style) -->
       <aside class="category-sidebar" style="width: 260px; background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(10px); border-radius: 16px; border: 1px solid rgba(232, 180, 184, 0.4); box-shadow: 0 8px 32px rgba(82, 52, 63, 0.08); overflow: hidden; flex-shrink: 0; position: sticky; top: 90px; padding: 10px;">
         <div style="background: #d47a8f; color: white; padding: 12px 18px; border-radius: 12px; font-weight: 700; font-size: 1.05rem; display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
-          <span></span> Categories
+          <span>📂</span> Categories
         </div>
         <ul id="sidebarCategoryList" style="list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 6px;">
           <!-- Dynamically populated vertical rounded category items -->
@@ -229,7 +229,7 @@
 
     function renderCategories() {
       if (sidebarCategoryList) {
-        sidebarCategoryList.innerHTML = `<li onclick="filterByCategory('all', this)" class="sidebar-cat-item active-sidebar-item" style="padding: 10px 16px; border-radius: 20px; cursor: pointer; color: #fff; background: #d47a8f; font-weight: 600; transition: all 0.2s;">✨ All Categories</li>`;
+        sidebarCategoryList.innerHTML = `<li onclick="filterByCategory('all', this)" class="sidebar-cat-item active-sidebar-item" style="padding: 10px 16px; border-radius: 20px; cursor: pointer; color: #fff; background: #d47a8f; font-weight: 600; transition: all 0.2s;">All Categories</li>`;
       }
       wholesaleCategorySelect.innerHTML = '<option value="" disabled selected>Primary Interest</option>';
 
