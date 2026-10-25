@@ -328,8 +328,33 @@
         <div class="stat-value" id="statTotalCategories">0</div>
       </div>
       <div class="stat-card">
+        <h4>Registered Users</h4>
+        <div class="stat-value" id="statTotalUsers">0</div>
+      </div>
+      <div class="stat-card">
         <h4>Database Status</h4>
         <div class="stat-value" id="dbStatusBadge" style="font-size:1.1rem; color:#2e7d32; margin-top:6px;">🟢 Live & Connected</div>
+      </div>
+    </div>
+
+    <!-- Registered Users Management Section -->
+    <div class="card-panel" style="margin-bottom: 30px;">
+      <h2>Registered Platform Users</h2>
+      <div style="overflow-x: auto;">
+        <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.9rem;">
+          <thead>
+            <tr style="border-bottom: 2px solid #fbe8eb; color: #8c6875;">
+              <th style="padding: 10px;">Email / Username</th>
+              <th style="padding: 10px;">Sign-In Method</th>
+              <th style="padding: 10px;">Registered Date</th>
+            </tr>
+          </thead>
+          <tbody id="adminUsersTableBody">
+            <tr>
+              <td colspan="3" style="padding: 15px; text-align: center; color: #8c6875;">Loading registered users...</td>
+            </tr>
+          </tbody>
+        </table>
       </div>
     </div>
 
@@ -471,17 +496,20 @@
     /* ==========================================
        BACKEND API & APP LOGIC (MONGODB CONNECTED)
        ========================================== */
-    const API_URL = 'http://localhost:5000/api/products';
+    const API_URL = 'https://maison-de-cess-1.onrender.com/api/products';
+    const USERS_API_URL = 'https://maison-de-cess-1.onrender.com/api/users';
     const defaultCategories = ["Clothing", "Home Accessories", "Loungewear", "Decor"];
 
     let categories = JSON.parse(localStorage.getItem('mdc_categories')) || defaultCategories;
     let products = [];
+    let users = [];
     let currentImageBase64 = "";
 
     const categoryListContainer = document.getElementById('categoryListContainer');
     const productGridContainer = document.getElementById('productGridContainer');
     const statTotalProducts = document.getElementById('statTotalProducts');
     const statTotalCategories = document.getElementById('statTotalCategories');
+    const statTotalUsers = document.getElementById('statTotalUsers');
     const prodCategorySelect = document.getElementById('prodCategory');
     const searchInput = document.getElementById('searchInput');
     const dbStatusBadge = document.getElementById('dbStatusBadge');
@@ -496,11 +524,22 @@
     const prodImageUrl = document.getElementById('prodImageUrl');
     const imagePreviewContainer = document.getElementById('imagePreviewContainer');
 
-    async function fetchProducts() {
+    async function fetchAdminData() {
       try {
-        const response = await fetch(API_URL);
-        if (!response.ok) throw new Error('Failed to fetch from server');
-        products = await response.json();
+        const [prodRes, userRes] = await Promise.all([
+          fetch(API_URL),
+          fetch(USERS_API_URL)
+        ]);
+
+        if (!prodRes.ok) throw new Error('Failed to fetch products');
+        products = await prodRes.json();
+
+        if (userRes.ok) {
+          users = await userRes.json();
+        } else {
+          users = [];
+        }
+
         dbStatusBadge.textContent = "🟢 Live & Connected";
         dbStatusBadge.style.color = "#2e7d32";
       } catch (err) {
@@ -508,6 +547,7 @@
         dbStatusBadge.textContent = "🔴 Server Offline";
         dbStatusBadge.style.color = "#c62828";
         products = [];
+        users = [];
       }
       renderUI();
     }
@@ -520,6 +560,27 @@
     function renderUI() {
       statTotalProducts.textContent = products.length;
       statTotalCategories.textContent = categories.length;
+      statTotalUsers.textContent = users.length;
+
+      // Render Users Table
+      const adminUsersTableBody = document.getElementById('adminUsersTableBody');
+      if (adminUsersTableBody) {
+        adminUsersTableBody.innerHTML = '';
+        if (users.length === 0) {
+          adminUsersTableBody.innerHTML = '<tr><td colspan="3" style="padding: 15px; text-align: center; color: #8c6875;">No users registered yet.</td></tr>';
+        } else {
+          users.forEach(u => {
+            const dateStr = u.signedUpAt ? new Date(u.signedUpAt).toLocaleString() : 'N/A';
+            adminUsersTableBody.innerHTML += `
+              <tr style="border-bottom: 1px solid #fbe8eb;">
+                <td style="padding: 12px; color: #52343f; font-weight: 600;">${u.email}</td>
+                <td style="padding: 12px; color: #d47a8f;">${u.provider || 'Email'}</td>
+                <td style="padding: 12px; color: #8c6875;">${dateStr}</td>
+              </tr>
+            `;
+          });
+        }
+      }
 
       if (categoryListContainer) {
         categoryListContainer.innerHTML = '';
@@ -670,7 +731,7 @@
           if (response.ok) {
             alert('✅ Product saved successfully to MongoDB!');
             if (productModal) productModal.classList.remove('active');
-            fetchProducts(); 
+            fetchAdminData(); 
           } else {
             alert('❌ Failed to save product on server.');
           }
@@ -712,7 +773,7 @@
             method: 'DELETE'
           });
           if (response.ok) {
-            fetchProducts();
+            fetchAdminData();
           } else {
             alert('❌ Failed to delete product.');
           }
@@ -748,7 +809,7 @@
     const exportBtn = document.getElementById('exportBtn');
     if (exportBtn) {
       exportBtn.addEventListener('click', () => {
-        const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify({ categories, products }));
+        const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify({ categories, products, users }));
         const downloadAnchor = document.createElement('a');
         downloadAnchor.setAttribute("href", dataStr);
         downloadAnchor.setAttribute("download", "maison_de_cess_catalog.json");
@@ -758,7 +819,7 @@
       });
     }
 
-    fetchProducts();
+    fetchAdminData();
   </script>
 </body>
 </html>
