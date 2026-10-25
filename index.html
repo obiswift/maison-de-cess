@@ -185,14 +185,33 @@
       <input type="text" id="productSearchInput" placeholder="Search products or categories..." oninput="filterProducts()" style="width: 100%; padding: 10px 20px; border: 1px solid #f2c4ce; border-radius: 25px; font-size: 0.9rem; background: rgba(255, 255, 255, 0.95); color: #52343f; outline: none; box-shadow: 0 3px 10px rgba(232, 180, 184, 0.15);">
     </div>
 
-    <!-- Right: Navigation Links, Sign In, Wishlist & Cart -->
+    <!-- Right: Navigation Links, Kilimall Account Dropdown, Wishlist & Cart -->
     <nav>
       <ul style="display: flex; list-style: none; gap: 18px; align-items: center; margin: 0; padding: 0;">
         <li><a href="index.html" style="text-decoration: none; color: #5c444e; font-weight: 600; font-size: 0.9rem;">Home</a></li>
         <li><a href="#retail-shop" style="text-decoration: none; color: #5c444e; font-weight: 600; font-size: 0.9rem;">Shop</a></li>
         <li><a href="#wholesale" class="btn-wholesale" style="text-decoration: none; font-size: 0.9rem;">Wholesale</a></li>
         <li><a href="admin.html" style="text-decoration: none; color:#d47a8f; font-weight:bold; font-size: 0.9rem;">Admin</a></li>
-        <li><a class="cart-link" id="authToggleBtn" style="text-decoration: none; color: #5c444e; font-weight: 600; cursor: pointer; font-size: 0.9rem;" onclick="openAuthModal()">👤 <span id="authLinkText">Sign In</span></a></li>
+        
+        <!-- Kilimall Style Account Dropdown -->
+        <li>
+          <div id="authContainer" style="position: relative; display: inline-block;">
+            <a class="cart-link" id="authToggleBtn" style="text-decoration: none; color: #5c444e; font-weight: 600; cursor: pointer; font-size: 0.9rem;" onclick="toggleUserDropdown()">
+              👤 <span id="authLinkText">Sign In</span> ▾
+            </a>
+            <div id="userDropdownMenu" style="display: none; position: absolute; right: 0; top: 30px; background: white; border: 1px solid #f2c4ce; border-radius: 12px; box-shadow: 0 10px 30px rgba(82,52,63,0.1); width: 200px; padding: 12px; z-index: 200;">
+              <div id="loggedInOptions" style="display: none;">
+                <p style="margin: 0 0 10px 0; font-size: 0.8rem; color: #52343f; border-bottom: 1px solid #fbe8eb; padding-bottom: 6px; font-weight: bold; word-break: break-all;" id="dropdownUserEmail"></p>
+                <a href="#" onclick="openWishlistFromDropdown(); return false;" style="display: block; padding: 6px 8px; color: #5c444e; text-decoration: none; font-size: 0.85rem; border-radius: 6px;">❤️ My Wishlist</a>
+                <a href="#" onclick="handleSignOut(); return false;" style="display: block; padding: 6px 8px; color: #d47a8f; text-decoration: none; font-size: 0.85rem; font-weight: bold; border-radius: 6px;">Sign Out</a>
+              </div>
+              <div id="loggedOutOptions">
+                <button onclick="openAuthModal(); document.getElementById('userDropdownMenu').style.display='none';" style="width: 100%; background: #d47a8f; color: white; border: none; border-radius: 15px; padding: 8px; font-weight: 600; cursor: pointer; font-size: 0.85rem;">Sign In / Register</button>
+              </div>
+            </div>
+          </div>
+        </li>
+
         <li><a class="cart-link" id="wishlistToggleBtn" style="text-decoration: none; color: #5c444e; font-weight: 600; cursor: pointer; font-size: 0.9rem;">❤️ <span class="cart-badge" id="wishlistCount">0</span></a></li>
         <li><a class="cart-link" id="cartToggleBtn" style="text-decoration: none; color: #5c444e; font-weight: 600; cursor: pointer; font-size: 0.9rem;">🛒 <span class="cart-badge" id="cartCount">0</span></a></li>
       </ul>
@@ -215,7 +234,7 @@
   <section class="retail-section-wrapper" id="retail-shop" style="max-width: 1300px; margin: 40px auto; padding: 0 5%;">
     <div>
       
-      <!-- Left Vertical Category Sidebar (Sticky: products scroll underneath it) -->
+      <!-- Left Vertical Category Sidebar (Sticky) -->
       <aside class="category-sidebar" style="background: rgba(255, 255, 255, 0.98); backdrop-filter: blur(10px); border-radius: 16px; border: 1px solid rgba(232, 180, 184, 0.4); box-shadow: 0 8px 32px rgba(82, 52, 63, 0.08); overflow: hidden; padding: 12px;">
         <div style="background: #d47a8f; color: white; padding: 10px 14px; border-radius: 12px; font-weight: 700; font-size: 0.95rem; display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
           <span>📂</span> Categories
@@ -337,9 +356,6 @@
 
   <!-- Three.js Interactive Canvas & Dynamic Data Connection Script -->
   <script>
-    /* ==========================================
-       THREE.JS IMMERSIVE 3D BACKGROUND
-       ========================================== */
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
     const renderer = new THREE.WebGLRenderer({ canvas: document.getElementById('bg-canvas'), alpha: true, antialias: true });
@@ -407,9 +423,6 @@
       renderer.setSize(window.innerWidth, window.innerHeight);
     });
 
-    /* ==========================================
-       DYNAMIC STORE DATA & KILIMALL AUTH/LOCATION
-       ========================================== */
     const API_URL = 'https://maison-de-cess-1.onrender.com/api/products';
     const USERS_API_URL = 'https://maison-de-cess-1.onrender.com/api/users';
     const defaultCategories = ["Clothing", "Home Accessories", "Loungewear", "Decor"];
@@ -536,6 +549,38 @@
       }
     }
 
+    // Kilimall Dropdown Toggle
+    function toggleUserDropdown() {
+      const menu = document.getElementById('userDropdownMenu');
+      const loggedInDiv = document.getElementById('loggedInOptions');
+      const loggedOutDiv = document.getElementById('loggedOutOptions');
+      
+      if (currentUser) {
+        loggedInDiv.style.display = 'block';
+        loggedOutDiv.style.display = 'none';
+        document.getElementById('dropdownUserEmail').textContent = currentUser.email;
+      } else {
+        loggedInDiv.style.display = 'none';
+        loggedOutDiv.style.display = 'block';
+      }
+
+      menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+    }
+
+    function handleSignOut() {
+      localStorage.removeItem('mdc_user');
+      currentUser = null;
+      document.getElementById('authLinkText').textContent = 'Sign In';
+      document.getElementById('userDropdownMenu').style.display = 'none';
+      alert('You have been signed out.');
+    }
+
+    window.addEventListener('click', function(e) {
+      if (!document.getElementById('authContainer').contains(e.target)) {
+        document.getElementById('userDropdownMenu').style.display = 'none';
+      }
+    });
+
     // Sign In & Google Auth Flow
     function openAuthModal() {
       document.getElementById('authModal').style.display = 'flex';
@@ -629,6 +674,13 @@
           </div>
         `;
       });
+    }
+
+    function openWishlistFromDropdown() {
+      document.getElementById('userDropdownMenu').style.display = 'none';
+      updateWishlistUI();
+      wishlistDrawer.classList.add('open');
+      wishlistOverlay.style.display = 'block';
     }
 
     // Wishlist Drawer Toggles
