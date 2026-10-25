@@ -236,7 +236,7 @@
       categories.forEach(cat => {
         if (sidebarCategoryList) {
           sidebarCategoryList.innerHTML += `
-            <li onclick="filterByCategory('${cat}', this)" class="sidebar-cat-item" style="padding: 10px 16px; border-radius: 20px; cursor: pointer; color: #5c444e; font-size: 0.95rem; display: flex; justify-content: space-between; align-items: center; transition: all 0.2s;" onmouseover="if(!this.classList.contains('active-sidebar-item'))this.style.background='rgba(232,180,184,0.25)'" onmouseout="if(!this.classList.contains('active-sidebar-item'))this.style.background='transparent'">
+            <li onclick="filterByCategory('${cat}', this)" class="sidebar-cat-item" style="padding: 10px 16px; border-radius: 20px; cursor: pointer; color: #5c444e; background: rgba(232, 180, 184, 0.2); font-size: 0.95rem; display: flex; justify-content: space-between; align-items: center; transition: all 0.2s;" onmouseover="if(!this.classList.contains('active-sidebar-item'))this.style.background='rgba(232,180,184,0.35)'" onmouseout="if(!this.classList.contains('active-sidebar-item'))this.style.background='rgba(232, 180, 184, 0.2)'">
               <span>${cat}</span>
               <span style="color: #d47a8f; font-size: 0.8rem;">›</span>
             </li>
@@ -250,7 +250,7 @@
     window.filterByCategory = function(categoryName, liElement) {
       if (liElement) {
         document.querySelectorAll('.sidebar-cat-item').forEach(item => {
-          item.style.background = 'transparent';
+          item.style.background = 'rgba(232, 180, 184, 0.2)';
           item.style.color = '#5c444e';
           item.classList.remove('active-sidebar-item');
         });
