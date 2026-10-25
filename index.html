@@ -10,6 +10,89 @@
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..700;1,400..700&display=swap" rel="stylesheet">
   <!-- Three.js Library -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <style>
+    /* Kilimall-style Compact Product Grid & Cards Override */
+    .product-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: 15px;
+    }
+    @media (max-width: 768px) {
+      .product-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+      }
+      .retail-section-wrapper > div {
+        flex-direction: column !important;
+      }
+      .category-sidebar {
+        width: 100% !important;
+        position: relative !important;
+        top: 0 !important;
+        margin-bottom: 20px;
+      }
+    }
+    .product-card {
+      background: #ffffff;
+      border: 1px solid rgba(232, 180, 184, 0.3);
+      border-radius: 12px;
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      box-shadow: 0 4px 15px rgba(82, 52, 63, 0.04);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .product-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 25px rgba(82, 52, 63, 0.08);
+    }
+    .product-card h3 {
+      font-size: 0.95rem;
+      color: #52343f;
+      margin: 8px 0 4px 0;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      font-weight: 600;
+    }
+    .category-tag {
+      font-size: 0.75rem;
+      color: #8c6875;
+      margin-bottom: 8px;
+    }
+    .price-box {
+      margin: 8px 0;
+    }
+    .retail-price {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: #d47a8f;
+      display: block;
+    }
+    .wholesale-price {
+      font-size: 0.75rem;
+      color: #8c6875;
+      display: block;
+      margin-top: 2px;
+    }
+    .add-to-cart-btn {
+      background: #d47a8f;
+      color: white;
+      border: none;
+      border-radius: 20px;
+      padding: 8px 12px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      width: 100%;
+      transition: background 0.2s;
+    }
+    .add-to-cart-btn:hover {
+      background: #bd657a;
+    }
+  </style>
 </head>
 <body>
 
@@ -283,17 +366,21 @@
         const moq = p.moq || 10;
 
         userProductsGrid.innerHTML += `
-          <div class="product-card float-on-hover">
-            <img src="${imgSrc}" onclick="openImageModal('${imgSrc}')" style="width:100%; height:220px; object-fit:cover; border-radius:14px; margin-bottom:15px; background:#fbe8eb; cursor:pointer;" alt="${p.name}" title="Click to zoom">
-            <h3>${p.name}</h3>
-            <p class="category-tag">${p.category}</p>
-            
-            <div class="price-box">
-              <span class="retail-price">Retail: KSh ${retail.toLocaleString()}</span>
-              <span class="wholesale-price">Wholesale: KSh ${wholesale.toLocaleString()} (Min. ${moq} pcs)</span>
+          <div class="product-card">
+            <div>
+              <img src="${imgSrc}" onclick="openImageModal('${imgSrc}')" style="width:100%; height:160px; object-fit:cover; border-radius:10px; margin-bottom:8px; background:#fbe8eb; cursor:pointer;" alt="${p.name}" title="Click to zoom">
+              <h3>${p.name}</h3>
+              <p class="category-tag">${p.category}</p>
             </div>
             
-            <button class="add-to-cart-btn float-on-hover" type="button" onclick="addToCartEvent(${originalIndex})">Add to Cart</button>
+            <div>
+              <div class="price-box">
+                <span class="retail-price">KSh ${retail.toLocaleString()}</span>
+                <span class="wholesale-price">Wholesale: KSh ${wholesale.toLocaleString()} (Min. ${moq} pcs)</span>
+              </div>
+              
+              <button class="add-to-cart-btn" type="button" onclick="addToCartEvent(${originalIndex})">Add to Cart</button>
+            </div>
           </div>
         `;
       });
