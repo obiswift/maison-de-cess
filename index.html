@@ -11,22 +11,26 @@
   <!-- Three.js Library -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
   <style>
-    /* Strict 2-Column Product Grid & Sticky Sidebar under which content scrolls */
+    /* Two-product mobile grid & sticky left category sidebar */
     .product-grid {
       display: grid;
-      grid-template-columns: repeat(2, 1fr) !important;
+      grid-template-columns: repeat(2, 1fr);
       gap: 15px;
     }
-    @media (max-width: 768px) {
+    @media (min-width: 900px) {
+      .product-grid {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
+    @media (max-width: 600px) {
       .retail-section-wrapper > div {
-        flex-direction: row !important;
-        align-items: flex-start !important;
+        flex-direction: column !important;
       }
       .category-sidebar {
-        position: sticky !important;
-        top: 90px !important;
-        width: 220px !important;
-        flex-shrink: 0;
+        width: 100% !important;
+        position: relative !important;
+        top: 0 !important;
+        margin-bottom: 20px;
       }
     }
   </style>
@@ -82,7 +86,7 @@
   <section class="retail-section-wrapper" id="retail-shop" style="max-width: 1300px; margin: 40px auto; padding: 0 5%;">
     <div style="display: flex; gap: 30px; align-items: flex-start;">
       
-      <!-- Left Vertical Category Sidebar (Sticky: products scroll past/underneath it) -->
+      <!-- Left Vertical Category Sidebar (Sticky as products scroll underneath/beside) -->
       <aside class="category-sidebar" style="width: 260px; background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(10px); border-radius: 16px; border: 1px solid rgba(232, 180, 184, 0.4); box-shadow: 0 8px 32px rgba(82, 52, 63, 0.08); overflow: hidden; flex-shrink: 0; position: sticky; top: 90px; padding: 10px; z-index: 10;">
         <div style="background: #d47a8f; color: white; padding: 12px 18px; border-radius: 12px; font-weight: 700; font-size: 1.05rem; display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
           <span>📂</span> Categories
@@ -92,7 +96,7 @@
         </ul>
       </aside>
 
-      <!-- Right Products Grid Section (Strictly 2 products per row side-by-side) -->
+      <!-- Right Products Grid Section (2 items per row on mobile) -->
       <div style="flex: 1;">
         <div class="product-grid" id="userProductsGrid" style="margin-top: 0;">
           <!-- Dynamically populated from backend API -->
