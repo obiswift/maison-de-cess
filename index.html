@@ -11,7 +11,7 @@
   <!-- Three.js Library -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
   <style>
-    /* Kilimall-Exact Responsive Layout & Sticky Sidebar */
+    /* Responsive Side-by-Side Layout & Sticky Sidebar */
     .retail-section-wrapper > div {
       display: flex !important;
       flex-direction: row !important;
@@ -43,9 +43,85 @@
         gap: 10px !important;
       }
       .category-sidebar {
-        width: 130px !important;
-        font-size: 0.85rem !important;
+        width: 120px !important;
+        font-size: 0.8rem !important;
       }
+    }
+    /* Kilimall-style Like Heart Button Styling */
+    .like-btn {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      background: rgba(255, 255, 255, 0.85);
+      border: none;
+      border-radius: 50%;
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 1.1rem;
+      box-shadow: 0 3px 10px rgba(82, 52, 63, 0.1);
+      transition: transform 0.2s, background 0.2s;
+      z-index: 5;
+    }
+    .like-btn:hover {
+      transform: scale(1.1);
+      background: #ffffff;
+    }
+    .product-card {
+      position: relative;
+    }
+    /* Wishlist Drawer & Overlay Styles */
+    .wishlist-drawer {
+      position: fixed;
+      top: 0;
+      right: -400px;
+      width: 380px;
+      height: 100%;
+      background: #ffffff;
+      box-shadow: -5px 0 25px rgba(82, 52, 63, 0.15);
+      z-index: 3000;
+      transition: right 0.3s ease-in-out;
+      display: flex;
+      flex-direction: column;
+    }
+    .wishlist-drawer.open {
+      right: 0;
+    }
+    .wishlist-header {
+      padding: 20px;
+      background: #fbe8eb;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid rgba(232, 180, 184, 0.4);
+    }
+    .wishlist-header h3 {
+      margin: 0;
+      color: #52343f;
+      font-size: 1.2rem;
+    }
+    .close-wishlist {
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      cursor: pointer;
+      color: #724e5b;
+    }
+    .wishlist-items {
+      flex: 1;
+      padding: 20px;
+      overflow-y: auto;
+    }
+    .cart-badge {
+      background: #d47a8f;
+      color: white;
+      border-radius: 50%;
+      padding: 2px 6px;
+      font-size: 0.75rem;
+      font-weight: bold;
     }
   </style>
 </head>
@@ -72,13 +148,14 @@
       <input type="text" id="productSearchInput" placeholder="Search products or categories..." oninput="filterProducts()" style="width: 100%; padding: 10px 20px; border: 1px solid #f2c4ce; border-radius: 25px; font-size: 0.9rem; background: rgba(255, 255, 255, 0.95); color: #52343f; outline: none; box-shadow: 0 3px 10px rgba(232, 180, 184, 0.15);">
     </div>
 
-    <!-- Right: Navigation Links & Cart -->
+    <!-- Right: Navigation Links, Wishlist & Cart -->
     <nav>
       <ul style="display: flex; list-style: none; gap: 20px; align-items: center; margin: 0; padding: 0;">
         <li><a href="index.html" style="text-decoration: none; color: #5c444e; font-weight: 600; font-size: 0.9rem;">Home</a></li>
         <li><a href="#retail-shop" style="text-decoration: none; color: #5c444e; font-weight: 600; font-size: 0.9rem;">Shop</a></li>
         <li><a href="#wholesale" class="btn-wholesale" style="text-decoration: none; font-size: 0.9rem;">Wholesale</a></li>
         <li><a href="admin.html" style="text-decoration: none; color:#d47a8f; font-weight:bold; font-size: 0.9rem;">Admin</a></li>
+        <li><a class="cart-link" id="wishlistToggleBtn" style="text-decoration: none; color: #5c444e; font-weight: 600; cursor: pointer; font-size: 0.9rem;">❤️ Wishlist <span class="cart-badge" id="wishlistCount">0</span></a></li>
         <li><a class="cart-link" id="cartToggleBtn" style="text-decoration: none; color: #5c444e; font-weight: 600; cursor: pointer; font-size: 0.9rem;">🛒 Cart <span class="cart-badge" id="cartCount">0</span></a></li>
       </ul>
     </nav>
@@ -103,14 +180,14 @@
       <!-- Left Vertical Category Sidebar (Sticky: products scroll underneath it) -->
       <aside class="category-sidebar" style="background: rgba(255, 255, 255, 0.98); backdrop-filter: blur(10px); border-radius: 16px; border: 1px solid rgba(232, 180, 184, 0.4); box-shadow: 0 8px 32px rgba(82, 52, 63, 0.08); overflow: hidden; padding: 12px;">
         <div style="background: #d47a8f; color: white; padding: 10px 14px; border-radius: 12px; font-weight: 700; font-size: 0.95rem; display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
-          <span></span> Categories
+          <span>📂</span> Categories
         </div>
         <ul id="sidebarCategoryList" style="list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 6px;">
           <!-- Dynamically populated vertical rounded category items -->
         </ul>
       </aside>
 
-      <!-- Right Products Grid Section (Auto-adjusts 2 columns on mobile, auto-fill on desktop) -->
+      <!-- Right Products Grid Section (Auto-adjusts 2 columns on mobile, responsive auto-fill on desktop) -->
       <div style="flex: 1; min-width: 0;">
         <div class="product-grid" id="userProductsGrid" style="margin-top: 0;">
           <!-- Dynamically populated from backend API -->
@@ -143,6 +220,18 @@
   <div id="imageModal" style="display:none; position:fixed; z-index:2000; top:0; left:0; width:100%; height:100%; background:rgba(82,52,63,0.85); backdrop-filter:blur(6px); justify-content:center; align-items:center;">
     <span onclick="closeImageModal()" style="position:absolute; top:25px; right:40px; color:#fff; font-size:45px; font-weight:bold; cursor:pointer; transition:color 0.3s;" onmouseover="this.style.color='#d47a8f'" onmouseout="this.style.color='#fff'">&times;</span>
     <img id="modalImage" style="max-width:90%; max-height:85vh; border-radius:16px; box-shadow: 0 15px 40px rgba(0,0,0,0.4);">
+  </div>
+
+  <!-- Wishlist Drawer & Overlay -->
+  <div class="cart-overlay" id="wishlistOverlay" style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(82,52,63,0.4); backdrop-filter:blur(4px); display:none; z-index:2500;"></div>
+  <div class="wishlist-drawer" id="wishlistDrawer">
+    <div class="wishlist-header">
+      <h3>Your Liked Products (Wishlist)</h3>
+      <button class="close-wishlist" id="closeWishlistBtn">&times;</button>
+    </div>
+    <div class="wishlist-items" id="wishlistItemsContainer">
+      <p style="color: #8c6875; text-align: center; margin-top: 20px;">Your wishlist is empty.</p>
+    </div>
   </div>
 
   <!-- Cart Drawer & Overlay -->
@@ -247,6 +336,7 @@
     const defaultCategories = ["Clothing", "Home Accessories", "Loungewear", "Decor"];
     let categories = JSON.parse(localStorage.getItem('mdc_categories')) || defaultCategories;
     let products = [];
+    let likedProducts = JSON.parse(localStorage.getItem('mdc_likes')) || {};
 
     const userProductsGrid = document.getElementById('userProductsGrid');
     const wholesaleCategorySelect = document.getElementById('wholesaleCategorySelect');
@@ -263,6 +353,7 @@
       }
       renderProductsGrid(products);
       renderCategories();
+      updateWishlistUI();
     }
 
     function renderCategories() {
@@ -313,15 +404,17 @@
       }
 
       list.forEach((p) => {
-        // Find true index in the main products array for cart mapping
         const originalIndex = products.findIndex(item => item._id === p._id || item.name === p.name);
         const imgSrc = p.image || 'https://via.placeholder.com/300x300/fbe8eb/a87e8a?text=Product+Image';
         const retail = p.price || p.retailPrice || 0;
         const wholesale = p.wholesalePrice || 0;
         const moq = p.moq || 10;
+        const productId = p._id || p.name;
+        const isLiked = likedProducts[productId] ? '❤️' : '🤍';
 
         userProductsGrid.innerHTML += `
           <div class="product-card float-on-hover" style="background:#ffffff; border:1px solid rgba(232,180,184,0.3); border-radius:16px; padding:12px; display:flex; flex-direction:column; justify-content:space-between; box-shadow:0 8px 25px rgba(82,52,63,0.05); transition:all 0.3s;">
+            <button class="like-btn" onclick="toggleLike('${productId}')" title="Save to Wishlist">${isLiked}</button>
             <div>
               <img src="${imgSrc}" onclick="openImageModal('${imgSrc}')" style="width:100%; aspect-ratio: 1/1; object-fit:cover; border-radius:12px; margin-bottom:10px; background:#fbe8eb; cursor:pointer;" alt="${p.name}" title="Click to zoom">
               <h3 style="font-size:0.95rem; color:#52343f; margin:0 0 4px 0; font-weight:600; line-height:1.2;">${p.name}</h3>
@@ -340,6 +433,74 @@
         `;
       });
     }
+
+    // Kilimall-Style Like / Wishlist Management
+    window.toggleLike = function(id) {
+      if (likedProducts[id]) {
+        delete likedProducts[id];
+      } else {
+        likedProducts[id] = true;
+      }
+      localStorage.setItem('mdc_likes', JSON.stringify(likedProducts));
+      renderProductsGrid(products);
+      updateWishlistUI();
+    };
+
+    function updateWishlistUI() {
+      const likedIds = Object.keys(likedProducts);
+      const wishlistCount = document.getElementById('wishlistCount');
+      const wishlistItemsContainer = document.getElementById('wishlistItemsContainer');
+
+      wishlistCount.textContent = likedIds.length;
+
+      const likedProds = products.filter(p => likedProducts[p._id || p.name]);
+
+      if (likedProds.length === 0) {
+        wishlistItemsContainer.innerHTML = '<p style="color: #8c6875; text-align: center; margin-top: 20px;">Your wishlist is empty.</p>';
+        return;
+      }
+
+      wishlistItemsContainer.innerHTML = '';
+      likedProds.forEach((p) => {
+        const itemPrice = p.price || p.retailPrice || 0;
+        const pId = p._id || p.name;
+        wishlistItemsContainer.innerHTML += `
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; font-size:0.9rem; border-bottom:1px solid #fbe8eb; padding-bottom:10px;">
+            <div style="display:flex; gap:10px; align-items:center;">
+              <img src="${p.image}" style="width:50px; height:50px; object-fit:cover; border-radius:8px; background:#fbe8eb;">
+              <div>
+                <strong>${p.name}</strong><br>
+                <small style="color:#d47a8f; font-weight:bold;">KSh ${itemPrice.toLocaleString()}</small>
+              </div>
+            </div>
+            <button onclick="toggleLike('${pId}')" style="background:none; border:none; color:#d47a8f; cursor:pointer; font-size:1.1rem;" title="Remove">❌</button>
+          </div>
+        `;
+      });
+    }
+
+    // Wishlist Drawer Toggles
+    const wishlistToggleBtn = document.getElementById('wishlistToggleBtn');
+    const wishlistDrawer = document.getElementById('wishlistDrawer');
+    const wishlistOverlay = document.getElementById('wishlistOverlay');
+    const closeWishlistBtn = document.getElementById('closeWishlistBtn');
+
+    wishlistToggleBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      updateWishlistUI();
+      wishlistDrawer.classList.add('open');
+      wishlistOverlay.style.display = 'block';
+    });
+
+    closeWishlistBtn.addEventListener('click', () => {
+      wishlistDrawer.classList.remove('open');
+      wishlistOverlay.style.display = 'none';
+    });
+
+    wishlistOverlay.addEventListener('click', () => {
+      wishlistDrawer.classList.remove('open');
+      wishlistOverlay.style.display = 'none';
+    });
 
     // Search and Filter Function
     function filterProducts() {
