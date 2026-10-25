@@ -10,6 +10,8 @@
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..700;1,400..700&display=swap" rel="stylesheet">
   <!-- Three.js Library -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <!-- Google Identity Services SDK -->
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
   <style>
     /* Responsive Side-by-Side Layout & Sticky Sidebar */
     .retail-section-wrapper > div {
@@ -168,7 +170,7 @@
   <div class="top-bar" style="display: flex; justify-content: space-between; align-items: center; padding: 6px 5%;">
     <p style="margin: 0;">Free countrywide delivery on retail orders over KSh 5,000 | Bulk discounts for wholesale buyers!</p>
     <div style="cursor: pointer; font-size: 0.85rem; font-weight: 600;" onclick="openLocationModal()">
-      <span id="selectedFlag">🇰🇪</span> <span id="selectedLocationText">Kenya</span>
+      <span id="selectedFlag">🇰🇪</span> <span id="selectedLocationText">Kenya</span> 📍 (Detect Location)
     </div>
   </div>
 
@@ -199,14 +201,18 @@
             <a class="cart-link" id="authToggleBtn" style="text-decoration: none; color: #5c444e; font-weight: 600; cursor: pointer; font-size: 0.9rem;" onclick="toggleUserDropdown()">
               👤 <span id="authLinkText">Sign In</span> ▾
             </a>
-            <div id="userDropdownMenu" style="display: none; position: absolute; right: 0; top: 30px; background: white; border: 1px solid #f2c4ce; border-radius: 12px; box-shadow: 0 10px 30px rgba(82,52,63,0.1); width: 200px; padding: 12px; z-index: 200;">
+            <div id="userDropdownMenu" style="display: none; position: absolute; right: 0; top: 30px; background: white; border: 1px solid #f2c4ce; border-radius: 12px; box-shadow: 0 10px 30px rgba(82,52,63,0.1); width: 220px; padding: 12px; z-index: 200;">
               <div id="loggedInOptions" style="display: none;">
                 <p style="margin: 0 0 10px 0; font-size: 0.8rem; color: #52343f; border-bottom: 1px solid #fbe8eb; padding-bottom: 6px; font-weight: bold; word-break: break-all;" id="dropdownUserEmail"></p>
                 <a href="#" onclick="openWishlistFromDropdown(); return false;" style="display: block; padding: 6px 8px; color: #5c444e; text-decoration: none; font-size: 0.85rem; border-radius: 6px;">❤️ My Wishlist</a>
                 <a href="#" onclick="handleSignOut(); return false;" style="display: block; padding: 6px 8px; color: #d47a8f; text-decoration: none; font-size: 0.85rem; font-weight: bold; border-radius: 6px;">Sign Out</a>
               </div>
               <div id="loggedOutOptions">
-                <button onclick="openAuthModal(); document.getElementById('userDropdownMenu').style.display='none';" style="width: 100%; background: #d47a8f; color: white; border: none; border-radius: 15px; padding: 8px; font-weight: 600; cursor: pointer; font-size: 0.85rem;">Sign In / Register</button>
+                <button onclick="openAuthModal(); document.getElementById('userDropdownMenu').style.display='none';" style="width: 100%; background: #d47a8f; color: white; border: none; border-radius: 15px; padding: 8px; font-weight: 600; cursor: pointer; font-size: 0.85rem; margin-bottom: 8px;">Sign In with Email</button>
+                <button onclick="triggerGoogleLogin(); document.getElementById('userDropdownMenu').style.display='none';" style="width: 100%; background: #ffffff; color: #52343f; border: 1px solid #f2c4ce; border-radius: 15px; padding: 8px; font-weight: 600; cursor: pointer; font-size: 0.8rem; display:flex; align-items:center; justify-content:center; gap:6px;">
+                  <svg width="14" height="14" viewBox="0 0 24 24"><path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.66-5.17 3.66-9.17z"/><path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.1-6.72-4.93H1.19v3.15C3.17 21.36 7.23 24 12 24z"/><path fill="#FBBC05" d="M5.28 14.27c-.25-.72-.38-1.49-.38-2.27s.13-1.55.38-2.27V6.58H1.19C.43 8.12 0 9.87 0 11.7c0 1.83.43 3.58 1.19 5.12l4.09-2.55z"/><path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.23 0 3.17 2.64 1.19 6.58l4.09 3.15c.95-2.83 3.6-4.98 6.72-4.98z"/></svg>
+                  Google Account
+                </button>
               </div>
             </div>
           </div>
@@ -279,7 +285,7 @@
     <img id="modalImage" style="max-width:90%; max-height:85vh; border-radius:16px; box-shadow: 0 15px 40px rgba(0,0,0,0.4);">
   </div>
 
-  <!-- Sign In / Registration Modal (With Google Auth & Database Sync) -->
+  <!-- Sign In / Registration Modal (With Email & Real Google Auth) -->
   <div class="modal-container" id="authModal">
     <div class="modal-content">
       <span onclick="closeAuthModal()" style="position:absolute; top:15px; right:20px; font-size:22px; cursor:pointer; color:#724e5b;">&times;</span>
@@ -287,7 +293,7 @@
       
       <form onsubmit="handleSignIn(event)">
         <div style="margin-bottom: 12px;">
-          <input type="email" id="authEmail" placeholder="Enter your email or phone" required style="width:100%; padding:10px 14px; border:1px solid #f2c4ce; border-radius:10px; font-size:0.9rem; outline:none; box-sizing:border-box;">
+          <input type="email" id="authEmail" placeholder="Enter your email" required style="width:100%; padding:10px 14px; border:1px solid #f2c4ce; border-radius:10px; font-size:0.9rem; outline:none; box-sizing:border-box;">
         </div>
         <div style="margin-bottom: 15px;">
           <input type="password" id="authPassword" placeholder="Password" required style="width:100%; padding:10px 14px; border:1px solid #f2c4ce; border-radius:10px; font-size:0.9rem; outline:none; box-sizing:border-box;">
@@ -297,9 +303,9 @@
 
       <div style="text-align:center; margin: 10px 0; color:#8c6875; font-size:0.85rem;">OR</div>
 
-      <button onclick="handleGoogleSignIn()" style="width:100%; background:#ffffff; color:#52343f; border:1px solid #f2c4ce; border-radius:20px; padding:10px; font-weight:600; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px;">
+      <button onclick="triggerGoogleLogin()" style="width:100%; background:#ffffff; color:#52343f; border:1px solid #f2c4ce; border-radius:20px; padding:10px; font-weight:600; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px;">
         <svg width="18" height="18" viewBox="0 0 24 24"><path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.66-5.17 3.66-9.17z"/><path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.1-6.72-4.93H1.19v3.15C3.17 21.36 7.23 24 12 24z"/><path fill="#FBBC05" d="M5.28 14.27c-.25-.72-.38-1.49-.38-2.27s.13-1.55.38-2.27V6.58H1.19C.43 8.12 0 9.87 0 11.7c0 1.83.43 3.58 1.19 5.12l4.09-2.55z"/><path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.23 0 3.17 2.64 1.19 6.58l4.09 3.15c.95-2.83 3.6-4.98 6.72-4.98z"/></svg>
-        Continue with Google
+        Continue with Google Account
       </button>
     </div>
   </div>
@@ -309,9 +315,10 @@
     <div class="modal-content" style="text-align: center;">
       <span onclick="closeLocationModal()" style="position:absolute; top:15px; right:20px; font-size:22px; cursor:pointer; color:#724e5b;">&times;</span>
       <h3 style="color:#52343f; margin-top:0; margin-bottom:10px;">Select Your Country</h3>
-      <p style="color:#8c6875; font-size:0.85rem; margin-bottom:20px;">Choose your delivery region for accurate shipping calculations.</p>
+      <p style="color:#8c6875; font-size:0.85rem; margin-bottom:20px;">Choose your delivery region or let us detect it via browser location.</p>
       
       <div style="display: flex; flex-direction: column; gap: 10px;">
+        <button onclick="openLocationModal()" style="padding:10px; border:1px solid #d47a8f; background:#fbe8eb; color:#52343f; border-radius:10px; font-weight:600; cursor:pointer; margin-bottom:5px;">📍 Detect My Location via Browser</button>
         <button onclick="setLocation('Kenya', '🇰🇪')" style="padding:10px; border:1px solid #d47a8f; background:#fff; color:#52343f; border-radius:10px; font-weight:600; cursor:pointer; text-align:left; padding-left:20px;">🇰🇪 Kenya (Countrywide Delivery)</button>
         <button onclick="setLocation('Uganda', '🇺🇬')" style="padding:10px; border:1px solid #d47a8f; background:#fff; color:#52343f; border-radius:10px; font-weight:600; cursor:pointer; text-align:left; padding-left:20px;">🇺🇬 Uganda</button>
         <button onclick="setLocation('Tanzania', '🇹🇿')" style="padding:10px; border:1px solid #d47a8f; background:#fff; color:#52343f; border-radius:10px; font-weight:600; cursor:pointer; text-align:left; padding-left:20px;">🇹🇿 Tanzania</button>
@@ -440,8 +447,17 @@
     document.addEventListener('DOMContentLoaded', () => {
       document.getElementById('selectedLocationText').textContent = currentRegion;
       document.getElementById('selectedFlag').textContent = currentFlag;
+      
       if (currentUser) {
-        document.getElementById('authLinkText').textContent = currentUser.email.split('@')[0];
+        document.getElementById('authLinkText').textContent = currentUser.name || currentUser.email.split('@')[0];
+      }
+
+      // Initialize Google Identity Services
+      if (window.google) {
+        google.accounts.id.initialize({
+          client_id: "YOUR_GOOGLE_CLIENT_ID.apps.googleusercontent.com", // Replace with your Google Cloud Console Client ID
+          callback: handleGoogleCredentialResponse
+        });
       }
     });
 
@@ -468,7 +484,7 @@
       categories.forEach(cat => {
         if (sidebarCategoryList) {
           sidebarCategoryList.innerHTML += `
-            <li onclick="filterByCategory('${cat}', this)" class="sidebar-cat-item" style="padding: 10px 14px; border-radius: 16px; cursor: pointer; color: #5c444e; background: rgba(232, 180, 184, 0.2); font-size: 0.85rem; display: flex; justify-content: space-between; align-items: center; transition: all 0.2s;" onmouseover="if(!this.classList.contains('active-sidebar-item'))this.style.background='rgba(232,180,184,0.35)'" onmouseout="if(!this.classList.contains('active-sidebar-item'))this.style.background='rgba(232, 180, 184, 0.2)'">
+            <li onclick="filterByCategory('${cat}', this)" class="sidebar-cat-item" style="padding: 10px 14px; border-radius: 16px; cursor: pointer; color: #5c444e; background: rgba(232, 180, 184, 0.2); font-size: 0.85rem; display: flex; justify-content: space-between; align-items: center; transition: all 0.2s;">
               <span>${cat}</span>
               <span style="color: #d47a8f; font-size: 0.75rem;">›</span>
             </li>
@@ -518,18 +534,16 @@
           <div class="product-card float-on-hover" style="background:#ffffff; border:1px solid rgba(232,180,184,0.3); border-radius:16px; padding:12px; display:flex; flex-direction:column; justify-content:space-between; box-shadow:0 8px 25px rgba(82,52,63,0.05); transition:all 0.3s;">
             <button class="like-btn" onclick="toggleLike('${productId}')" title="Save to Wishlist">${isLiked}</button>
             <div>
-              <img src="${imgSrc}" onclick="openImageModal('${imgSrc}')" style="width:100%; aspect-ratio: 1/1; object-fit:cover; border-radius:12px; margin-bottom:10px; background:#fbe8eb; cursor:pointer;" alt="${p.name}" title="Click to zoom">
-              <h3 style="font-size:0.95rem; color:#52343f; margin:0 0 4px 0; font-weight:600; line-height:1.2;">${p.name}</h3>
+              <img src="${imgSrc}" onclick="openImageModal('${imgSrc}')" style="width:100%; aspect-ratio: 1/1; object-fit:cover; border-radius:12px; margin-bottom:10px; background:#fbe8eb; cursor:pointer;" alt="${p.name}">
+              <h3 style="font-size:0.95rem; color:#52343f; margin:0 0 4px 0; font-weight:600;">${p.name}</h3>
               <p class="category-tag" style="font-size:0.8rem; color:#8c6875; margin-bottom:10px;">${p.category}</p>
             </div>
-            
             <div>
               <div class="price-box" style="background:rgba(242,196,206,0.18); border-radius:12px; padding:8px 10px; margin-bottom:10px;">
                 <span class="retail-price" style="font-size:1rem; font-weight:700; color:#d47a8f; display:block;">KSh ${retail.toLocaleString()}</span>
-                <span class="wholesale-price" style="font-size:0.7rem; color:#8c6875; display:block; margin-top:2px;">Wholesale: KSh ${wholesale.toLocaleString()} (Min. ${moq} pcs)</span>
+                <span class="wholesale-price" style="font-size:0.7rem; color:#8c6875; display:block;">Wholesale: KSh ${wholesale.toLocaleString()} (Min. ${moq} pcs)</span>
               </div>
-              
-              <button class="add-to-cart-btn float-on-hover" type="button" onclick="addToCartEvent(${originalIndex})" style="background:#d47a8f; color:white; border:none; border-radius:22px; padding:8px 14px; font-size:0.8rem; font-weight:600; cursor:pointer; width:100%; transition:background 0.2s;">Add to Cart</button>
+              <button class="add-to-cart-btn" type="button" onclick="addToCartEvent(${originalIndex})" style="background:#d47a8f; color:white; border:none; border-radius:22px; padding:8px 14px; font-size:0.8rem; font-weight:600; cursor:pointer; width:100%;">Add to Cart</button>
             </div>
           </div>
         `;
@@ -549,6 +563,44 @@
       }
     }
 
+    // Real Google JWT Token Decoder
+    function parseJwt(token) {
+      try {
+        const base64Url = token.split('.')[1];
+        const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+        const jsonPayload = decodeURIComponent(atob(base64).split('').map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)).join(''));
+        return JSON.parse(jsonPayload);
+      } catch (e) {
+        return null;
+      }
+    }
+
+    async function handleGoogleCredentialResponse(response) {
+      const payload = parseJwt(response.credential);
+      if (payload) {
+        currentUser = {
+          name: payload.name,
+          email: payload.email,
+          provider: 'Google',
+          signedUpAt: new Date()
+        };
+        localStorage.setItem('mdc_user', JSON.stringify(currentUser));
+        document.getElementById('authLinkText').textContent = currentUser.name;
+        
+        await syncUserToDatabase(currentUser);
+        closeAuthModal();
+        alert(`Welcome, ${currentUser.name}! Signed in successfully.`);
+      }
+    }
+
+    function triggerGoogleLogin() {
+      if (window.google) {
+        google.accounts.id.prompt();
+      } else {
+        alert('Google Sign-In is initializing. Please try again in a moment.');
+      }
+    }
+
     // Kilimall Dropdown Toggle
     function toggleUserDropdown() {
       const menu = document.getElementById('userDropdownMenu');
@@ -558,7 +610,7 @@
       if (currentUser) {
         loggedInDiv.style.display = 'block';
         loggedOutDiv.style.display = 'none';
-        document.getElementById('dropdownUserEmail').textContent = currentUser.email;
+        document.getElementById('dropdownUserEmail').textContent = `${currentUser.name} (${currentUser.email})`;
       } else {
         loggedInDiv.style.display = 'none';
         loggedOutDiv.style.display = 'block';
@@ -581,42 +633,58 @@
       }
     });
 
-    // Sign In & Google Auth Flow
-    function openAuthModal() {
-      document.getElementById('authModal').style.display = 'flex';
-    }
-    function closeAuthModal() {
-      document.getElementById('authModal').style.display = 'none';
-    }
+    // Email Sign In
     async function handleSignIn(e) {
       e.preventDefault();
       const email = document.getElementById('authEmail').value;
-      currentUser = { email, provider: 'Email', signedUpAt: new Date() };
+      const name = prompt("Enter your preferred display name:", email.split('@')[0]) || email.split('@')[0];
+      currentUser = { name, email, provider: 'Email', signedUpAt: new Date() };
       localStorage.setItem('mdc_user', JSON.stringify(currentUser));
-      document.getElementById('authLinkText').textContent = email.split('@')[0];
+      document.getElementById('authLinkText').textContent = name;
       
       await syncUserToDatabase(currentUser);
       closeAuthModal();
       alert('Successfully signed in and registered!');
     }
-    async function handleGoogleSignIn() {
-      const mockGoogleEmail = 'user_' + Math.floor(Math.random() * 10000) + '@gmail.com';
-      currentUser = { email: mockGoogleEmail, provider: 'Google', signedUpAt: new Date() };
-      localStorage.setItem('mdc_user', JSON.stringify(currentUser));
-      document.getElementById('authLinkText').textContent = mockGoogleEmail.split('@')[0];
-      
-      await syncUserToDatabase(currentUser);
-      closeAuthModal();
-      alert('Successfully signed in with Google!');
+
+    // Geolocation API Integration
+    function openLocationModal() {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          async (position) => {
+            const lat = position.coords.latitude;
+            const lon = position.coords.longitude;
+            try {
+              const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`);
+              const data = await res.json();
+              if (data && data.address && data.address.country) {
+                const country = data.address.country;
+                let flag = '🌍';
+                if (country === 'Kenya') flag = '🇰🇪';
+                else if (country === 'Uganda') flag = '🇺🇬';
+                else if (country === 'Tanzania') flag = '🇹🇿';
+                
+                setLocation(country, flag);
+                return;
+              }
+            } catch (err) {
+              console.error('Geocoding error:', err);
+            }
+            document.getElementById('locationModal').style.display = 'flex';
+          },
+          () => {
+            document.getElementById('locationModal').style.display = 'flex';
+          }
+        );
+      } else {
+        document.getElementById('locationModal').style.display = 'flex';
+      }
     }
 
-    // Location Flag Flow
-    function openLocationModal() {
-      document.getElementById('locationModal').style.display = 'flex';
-    }
     function closeLocationModal() {
       document.getElementById('locationModal').style.display = 'none';
     }
+
     function setLocation(region, flag) {
       currentRegion = region;
       currentFlag = flag;
@@ -627,18 +695,13 @@
       closeLocationModal();
     }
 
-    // Like / Wishlist Management with Auth Guard
+    // Wishlist & Cart handlers
+    function openAuthModal() { document.getElementById('authModal').style.display = 'flex'; }
+    function closeAuthModal() { document.getElementById('authModal').style.display = 'none'; }
+    
     window.toggleLike = function(id) {
-      if (!currentUser) {
-        alert('Please sign in first to save products to your wishlist.');
-        openAuthModal();
-        return;
-      }
-      if (likedProducts[id]) {
-        delete likedProducts[id];
-      } else {
-        likedProducts[id] = true;
-      }
+      if (!currentUser) { alert('Please sign in first.'); openAuthModal(); return; }
+      if (likedProducts[id]) delete likedProducts[id]; else likedProducts[id] = true;
       localStorage.setItem('mdc_likes', JSON.stringify(likedProducts));
       renderProductsGrid(products);
       updateWishlistUI();
@@ -679,11 +742,10 @@
     function openWishlistFromDropdown() {
       document.getElementById('userDropdownMenu').style.display = 'none';
       updateWishlistUI();
-      wishlistDrawer.classList.add('open');
-      wishlistOverlay.style.display = 'block';
+      document.getElementById('wishlistDrawer').classList.add('open');
+      document.getElementById('wishlistOverlay').style.display = 'block';
     }
 
-    // Wishlist Drawer Toggles
     const wishlistToggleBtn = document.getElementById('wishlistToggleBtn');
     const wishlistDrawer = document.getElementById('wishlistDrawer');
     const wishlistOverlay = document.getElementById('wishlistOverlay');
@@ -691,51 +753,27 @@
 
     wishlistToggleBtn.addEventListener('click', (e) => {
       e.preventDefault();
-      if (!currentUser) {
-        alert('Please sign in to view your wishlist.');
-        openAuthModal();
-        return;
-      }
+      if (!currentUser) { alert('Please sign in to view your wishlist.'); openAuthModal(); return; }
       updateWishlistUI();
       wishlistDrawer.classList.add('open');
       wishlistOverlay.style.display = 'block';
     });
 
-    closeWishlistBtn.addEventListener('click', () => {
-      wishlistDrawer.classList.remove('open');
-      wishlistOverlay.style.display = 'none';
-    });
+    closeWishlistBtn.addEventListener('click', () => { wishlistDrawer.classList.remove('open'); wishlistOverlay.style.display = 'none'; });
+    wishlistOverlay.addEventListener('click', () => { wishlistDrawer.classList.remove('open'); wishlistOverlay.style.display = 'none'; });
 
-    wishlistOverlay.addEventListener('click', () => {
-      wishlistDrawer.classList.remove('open');
-      wishlistOverlay.style.display = 'none';
-    });
-
-    // Search and Filter Function
     function filterProducts() {
       const query = document.getElementById('productSearchInput').value.toLowerCase();
-      const filtered = products.filter(p => 
-        p.name.toLowerCase().includes(query) || 
-        (p.category && p.category.toLowerCase().includes(query))
-      );
+      const filtered = products.filter(p => p.name.toLowerCase().includes(query) || (p.category && p.category.toLowerCase().includes(query)));
       renderProductsGrid(filtered);
     }
 
-    // Image Zoom Modal Functions
     function openImageModal(url) {
-      const modal = document.getElementById('imageModal');
-      const modalImg = document.getElementById('modalImage');
-      modal.style.display = 'flex';
-      modalImg.src = url;
+      document.getElementById('imageModal').style.display = 'flex';
+      document.getElementById('modalImage').src = url;
     }
-
-    function closeImageModal() {
-      document.getElementById('imageModal').style.display = 'none';
-    }
-
-    document.getElementById('imageModal').addEventListener('click', (e) => {
-      if (e.target.id === 'imageModal') closeImageModal();
-    });
+    function closeImageModal() { document.getElementById('imageModal').style.display = 'none'; }
+    document.getElementById('imageModal').addEventListener('click', (e) => { if (e.target.id === 'imageModal') closeImageModal(); });
 
     const cartToggleBtn = document.getElementById('cartToggleBtn');
     const cartDrawer = document.getElementById('cartDrawer');
@@ -744,35 +782,17 @@
     const cartCount = document.getElementById('cartCount');
     const cartItemsContainer = document.getElementById('cartItemsContainer');
     const cartTotalPrice = document.getElementById('cartTotalPrice');
-
     let cart = [];
 
-    cartToggleBtn.addEventListener('click', (e) => {
-      e.preventDefault();
-      cartDrawer.classList.add('open');
-      cartOverlay.style.display = 'block';
-    });
-
-    closeCartBtn.addEventListener('click', () => {
-      cartDrawer.classList.remove('open');
-      cartOverlay.style.display = 'none';
-    });
-
-    cartOverlay.addEventListener('click', () => {
-      cartDrawer.classList.remove('open');
-      cartOverlay.style.display = 'none';
-    });
+    cartToggleBtn.addEventListener('click', (e) => { e.preventDefault(); cartDrawer.classList.add('open'); cartOverlay.style.display = 'block'; });
+    closeCartBtn.addEventListener('click', () => { cartDrawer.classList.remove('open'); cartOverlay.style.display = 'none'; });
+    cartOverlay.addEventListener('click', () => { cartDrawer.classList.remove('open'); cartOverlay.style.display = 'none'; });
 
     window.addToCartEvent = function(index) {
-      if (!currentUser) {
-        alert('Please sign in first to add items to your cart.');
-        openAuthModal();
-        return;
-      }
+      if (!currentUser) { alert('Please sign in first to add items to your cart.'); openAuthModal(); return; }
       const prod = products[index];
       if (prod) {
-        const itemPrice = prod.price || prod.retailPrice || 0;
-        cart.push({ name: prod.name, price: itemPrice });
+        cart.push({ name: prod.name, price: prod.price || prod.retailPrice || 0 });
         updateCartUI();
         cartDrawer.classList.add('open');
         cartOverlay.style.display = 'block';
@@ -786,17 +806,13 @@
         cartTotalPrice.textContent = 'KSh 0';
         return;
       }
-
       let total = 0;
       cartItemsContainer.innerHTML = '';
       cart.forEach((item, i) => {
         total += item.price;
         cartItemsContainer.innerHTML += `
           <div style="display:flex; justify-content:space-between; margin-bottom:12px; font-size:0.9rem;">
-            <div>
-              <strong>${item.name}</strong><br>
-              <small style="color:#8c6875;">KSh ${item.price.toLocaleString()}</small>
-            </div>
+            <div><strong>${item.name}</strong><br><small style="color:#8c6875;">KSh ${item.price.toLocaleString()}</small></div>
             <button onclick="removeItem(${i})" style="background:none; border:none; color:#d47a8f; cursor:pointer;">Remove</button>
           </div>
         `;
@@ -804,21 +820,10 @@
       cartTotalPrice.textContent = 'KSh ' + total.toLocaleString();
     }
 
-    window.removeItem = function(index) {
-      cart.splice(index, 1);
-      updateCartUI();
-    };
-
+    window.removeItem = function(index) { cart.splice(index, 1); updateCartUI(); };
     function proceedToCheckout() {
-      if (!currentUser) {
-        alert('Please sign in to proceed to checkout.');
-        openAuthModal();
-        return;
-      }
-      if (cart.length === 0) {
-        alert('Your cart is empty.');
-        return;
-      }
+      if (!currentUser) { alert('Please sign in to proceed to checkout.'); openAuthModal(); return; }
+      if (cart.length === 0) { alert('Your cart is empty.'); return; }
       alert('Redirecting to secure checkout...');
     }
 
