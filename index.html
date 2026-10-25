@@ -73,8 +73,19 @@
     .product-card {
       position: relative;
     }
-    /* Wishlist Drawer & Overlay Styles */
-    .wishlist-drawer {
+    /* Drawers & Modals Overlays */
+    .drawer-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(82, 52, 63, 0.4);
+      backdrop-filter: blur(4px);
+      display: none;
+      z-index: 2500;
+    }
+    .side-drawer {
       position: fixed;
       top: 0;
       right: -400px;
@@ -87,10 +98,10 @@
       display: flex;
       flex-direction: column;
     }
-    .wishlist-drawer.open {
+    .side-drawer.open {
       right: 0;
     }
-    .wishlist-header {
+    .drawer-header {
       padding: 20px;
       background: #fbe8eb;
       display: flex;
@@ -98,19 +109,19 @@
       align-items: center;
       border-bottom: 1px solid rgba(232, 180, 184, 0.4);
     }
-    .wishlist-header h3 {
+    .drawer-header h3 {
       margin: 0;
       color: #52343f;
       font-size: 1.2rem;
     }
-    .close-wishlist {
+    .close-drawer {
       background: none;
       border: none;
       font-size: 1.5rem;
       cursor: pointer;
       color: #724e5b;
     }
-    .wishlist-items {
+    .drawer-body {
       flex: 1;
       padding: 20px;
       overflow-y: auto;
@@ -123,6 +134,29 @@
       font-size: 0.75rem;
       font-weight: bold;
     }
+    /* Kilimall Sign In & Location Modal */
+    .modal-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(82, 52, 63, 0.6);
+      backdrop-filter: blur(5px);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 4000;
+    }
+    .modal-content {
+      background: white;
+      padding: 30px;
+      border-radius: 20px;
+      width: 90%;
+      max-width: 400px;
+      box-shadow: 0 15px 40px rgba(0,0,0,0.2);
+      position: relative;
+    }
   </style>
 </head>
 <body>
@@ -130,9 +164,12 @@
   <!-- Background 3D Canvas -->
   <canvas id="bg-canvas"></canvas>
 
-  <!-- Top Announcement Bar -->
-  <div class="top-bar">
-    <p>Free countrywide delivery on retail orders over KSh 5,000 | Bulk discounts for wholesale buyers!</p>
+  <!-- Top Announcement Bar with Location Selector -->
+  <div class="top-bar" style="display: flex; justify-content: space-between; align-items: center; padding: 6px 5%;">
+    <p style="margin: 0;">Free countrywide delivery on retail orders over KSh 5,000 | Bulk discounts for wholesale buyers!</p>
+    <div style="cursor: pointer; font-size: 0.85rem; font-weight: 600;" onclick="openLocationModal()">
+      📍 <span id="selectedLocationText">Kenya (Detect Location)</span>
+    </div>
   </div>
 
   <!-- Navigation Bar with Integrated Search Bar -->
@@ -148,15 +185,16 @@
       <input type="text" id="productSearchInput" placeholder="Search products or categories..." oninput="filterProducts()" style="width: 100%; padding: 10px 20px; border: 1px solid #f2c4ce; border-radius: 25px; font-size: 0.9rem; background: rgba(255, 255, 255, 0.95); color: #52343f; outline: none; box-shadow: 0 3px 10px rgba(232, 180, 184, 0.15);">
     </div>
 
-    <!-- Right: Navigation Links, Wishlist & Cart -->
+    <!-- Right: Navigation Links, Sign In, Wishlist & Cart -->
     <nav>
-      <ul style="display: flex; list-style: none; gap: 20px; align-items: center; margin: 0; padding: 0;">
+      <ul style="display: flex; list-style: none; gap: 18px; align-items: center; margin: 0; padding: 0;">
         <li><a href="index.html" style="text-decoration: none; color: #5c444e; font-weight: 600; font-size: 0.9rem;">Home</a></li>
         <li><a href="#retail-shop" style="text-decoration: none; color: #5c444e; font-weight: 600; font-size: 0.9rem;">Shop</a></li>
         <li><a href="#wholesale" class="btn-wholesale" style="text-decoration: none; font-size: 0.9rem;">Wholesale</a></li>
         <li><a href="admin.html" style="text-decoration: none; color:#d47a8f; font-weight:bold; font-size: 0.9rem;">Admin</a></li>
-        <li><a class="cart-link" id="wishlistToggleBtn" style="text-decoration: none; color: #5c444e; font-weight: 600; cursor: pointer; font-size: 0.9rem;">❤️ Wishlist <span class="cart-badge" id="wishlistCount">0</span></a></li>
-        <li><a class="cart-link" id="cartToggleBtn" style="text-decoration: none; color: #5c444e; font-weight: 600; cursor: pointer; font-size: 0.9rem;">🛒 Cart <span class="cart-badge" id="cartCount">0</span></a></li>
+        <li><a class="cart-link" id="authToggleBtn" style="text-decoration: none; color: #5c444e; font-weight: 600; cursor: pointer; font-size: 0.9rem;" onclick="openAuthModal()">👤 <span id="authLinkText">Sign In</span></a></li>
+        <li><a class="cart-link" id="wishlistToggleBtn" style="text-decoration: none; color: #5c444e; font-weight: 600; cursor: pointer; font-size: 0.9rem;">❤️ <span class="cart-badge" id="wishlistCount">0</span></a></li>
+        <li><a class="cart-link" id="cartToggleBtn" style="text-decoration: none; color: #5c444e; font-weight: 600; cursor: pointer; font-size: 0.9rem;">🛒 <span class="cart-badge" id="cartCount">0</span></a></li>
       </ul>
     </nav>
   </header>
@@ -180,14 +218,14 @@
       <!-- Left Vertical Category Sidebar (Sticky: products scroll underneath it) -->
       <aside class="category-sidebar" style="background: rgba(255, 255, 255, 0.98); backdrop-filter: blur(10px); border-radius: 16px; border: 1px solid rgba(232, 180, 184, 0.4); box-shadow: 0 8px 32px rgba(82, 52, 63, 0.08); overflow: hidden; padding: 12px;">
         <div style="background: #d47a8f; color: white; padding: 10px 14px; border-radius: 12px; font-weight: 700; font-size: 0.95rem; display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
-          <span></span> Categories
+          <span>📂</span> Categories
         </div>
         <ul id="sidebarCategoryList" style="list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 6px;">
           <!-- Dynamically populated vertical rounded category items -->
         </ul>
       </aside>
 
-      <!-- Right Products Grid Section (Auto-adjusts 2 columns on mobile, responsive auto-fill on desktop) -->
+      <!-- Right Products Grid Section -->
       <div style="flex: 1; min-width: 0;">
         <div class="product-grid" id="userProductsGrid" style="margin-top: 0;">
           <!-- Dynamically populated from backend API -->
@@ -222,34 +260,66 @@
     <img id="modalImage" style="max-width:90%; max-height:85vh; border-radius:16px; box-shadow: 0 15px 40px rgba(0,0,0,0.4);">
   </div>
 
-  <!-- Wishlist Drawer & Overlay -->
-  <div class="cart-overlay" id="wishlistOverlay" style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(82,52,63,0.4); backdrop-filter:blur(4px); display:none; z-index:2500;"></div>
-  <div class="wishlist-drawer" id="wishlistDrawer">
-    <div class="wishlist-header">
-      <h3>Your Liked Products (Wishlist)</h3>
-      <button class="close-wishlist" id="closeWishlistBtn">&times;</button>
+  <!-- Kilimall Style Sign In Modal -->
+  <div class="modal-container" id="authModal">
+    <div class="modal-content">
+      <span onclick="closeAuthModal()" style="position:absolute; top:15px; right:20px; font-size:22px; cursor:pointer; color:#724e5b;">&times;</span>
+      <h3 style="color:#52343f; margin-top:0; margin-bottom:15px; font-size:1.3rem;">Sign In to Maison de Cess</h3>
+      <form onsubmit="handleSignIn(event)">
+        <div style="margin-bottom: 12px;">
+          <input type="email" id="authEmail" placeholder="Enter your email or phone" required style="width:100%; padding:10px 14px; border:1px solid #f2c4ce; border-radius:10px; font-size:0.9rem; outline:none; box-sizing:border-box;">
+        </div>
+        <div style="margin-bottom: 20px;">
+          <input type="password" id="authPassword" placeholder="Password" required style="width:100%; padding:10px 14px; border:1px solid #f2c4ce; border-radius:10px; font-size:0.9rem; outline:none; box-sizing:border-box;">
+        </div>
+        <button type="submit" style="width:100%; background:#d47a8f; color:white; border:none; border-radius:20px; padding:10px; font-weight:600; cursor:pointer;">Sign In</button>
+      </form>
     </div>
-    <div class="wishlist-items" id="wishlistItemsContainer">
+  </div>
+
+  <!-- Kilimall Style Location Selection Modal -->
+  <div class="modal-container" id="locationModal">
+    <div class="modal-content" style="text-align: center;">
+      <span onclick="closeLocationModal()" style="position:absolute; top:15px; right:20px; font-size:22px; cursor:pointer; color:#724e5b;">&times;</span>
+      <h3 style="color:#52343f; margin-top:0; margin-bottom:10px;">Select Your Location</h3>
+      <p style="color:#8c6875; font-size:0.85rem; margin-bottom:20px;">Choose your delivery region for accurate shipping calculations.</p>
+      
+      <div style="display: flex; flex-direction: column; gap: 10px;">
+        <button onclick="setLocation('Kenya')" style="padding:10px; border:1px solid #d47a8f; background:#fff; color:#52343f; border-radius:10px; font-weight:600; cursor:pointer;">🇰🇪 Kenya (Countrywide Delivery)</button>
+        <button onclick="setLocation('Uganda')" style="padding:10px; border:1px solid #d47a8f; background:#fff; color:#52343f; border-radius:10px; font-weight:600; cursor:pointer;">🇺🇬 Uganda</button>
+        <button onclick="detectUserGPSLocation()" style="padding:10px; background:#d47a8f; color:#fff; border:none; border-radius:10px; font-weight:600; cursor:pointer;">📍 Detect My Precise Location via GPS</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Wishlist Drawer & Overlay -->
+  <div class="drawer-overlay" id="wishlistOverlay"></div>
+  <div class="side-drawer" id="wishlistDrawer">
+    <div class="drawer-header">
+      <h3>Your Liked Products (Wishlist)</h3>
+      <button class="close-drawer" id="closeWishlistBtn">&times;</button>
+    </div>
+    <div class="drawer-body" id="wishlistItemsContainer">
       <p style="color: #8c6875; text-align: center; margin-top: 20px;">Your wishlist is empty.</p>
     </div>
   </div>
 
   <!-- Cart Drawer & Overlay -->
-  <div class="cart-overlay" id="cartOverlay"></div>
-  <div class="cart-drawer" id="cartDrawer">
-    <div class="cart-header">
+  <div class="drawer-overlay" id="cartOverlay"></div>
+  <div class="side-drawer" id="cartDrawer">
+    <div class="drawer-header">
       <h3>Your Shopping Cart</h3>
-      <button class="close-cart" id="closeCartBtn">&times;</button>
+      <button class="close-drawer" id="closeCartBtn">&times;</button>
     </div>
-    <div class="cart-items" id="cartItemsContainer">
+    <div class="drawer-body" id="cartItemsContainer">
       <p style="color: #8c6875; text-align: center; margin-top: 20px;">Your cart is empty.</p>
     </div>
-    <div class="cart-footer">
-      <div class="cart-total">
+    <div style="padding: 20px; background: #fbe8eb; border-top: 1px solid rgba(232, 180, 184, 0.4);">
+      <div style="display: flex; justify-content: space-between; margin-bottom: 12px; font-weight: bold; color: #52343f;">
         <span>Total:</span>
         <span id="cartTotalPrice">KSh 0</span>
       </div>
-      <button class="checkout-btn float-on-hover">Proceed to Checkout</button>
+      <button style="width: 100%; background: #d47a8f; color: white; border: none; border-radius: 20px; padding: 10px; font-weight: 600; cursor: pointer;" class="float-on-hover">Proceed to Checkout</button>
     </div>
   </div>
 
@@ -330,17 +400,27 @@
     });
 
     /* ==========================================
-       DYNAMIC STORE DATA FROM BACKEND API (MONGODB)
+       DYNAMIC STORE DATA & KILIMALL AUTH/LOCATION
        ========================================== */
     const API_URL = 'https://maison-de-cess-1.onrender.com/api/products';
     const defaultCategories = ["Clothing", "Home Accessories", "Loungewear", "Decor"];
     let categories = JSON.parse(localStorage.getItem('mdc_categories')) || defaultCategories;
     let products = [];
     let likedProducts = JSON.parse(localStorage.getItem('mdc_likes')) || {};
+    let currentUser = JSON.parse(localStorage.getItem('mdc_user')) || null;
+    let currentRegion = localStorage.getItem('mdc_region') || 'Kenya';
 
     const userProductsGrid = document.getElementById('userProductsGrid');
     const wholesaleCategorySelect = document.getElementById('wholesaleCategorySelect');
     const sidebarCategoryList = document.getElementById('sidebarCategoryList');
+
+    // Initialize state on load
+    document.addEventListener('DOMContentLoaded', () => {
+      document.getElementById('selectedLocationText').textContent = currentRegion;
+      if (currentUser) {
+        document.getElementById('authLinkText').textContent = currentUser.email.split('@')[0];
+      }
+    });
 
     async function fetchStoreProducts() {
       try {
@@ -375,7 +455,6 @@
       });
     }
 
-    // Filter products by vertical sidebar category selection with active rounded pill styling
     window.filterByCategory = function(categoryName, liElement) {
       if (liElement) {
         document.querySelectorAll('.sidebar-cat-item').forEach(item => {
@@ -434,7 +513,56 @@
       });
     }
 
-    // Kilimall-Style Like / Wishlist Management
+    // Sign In Flow (Kilimall Style)
+    function openAuthModal() {
+      document.getElementById('authModal').style.display = 'flex';
+    }
+    function closeAuthModal() {
+      document.getElementById('authModal').style.display = 'none';
+    }
+    function handleSignIn(e) {
+      e.preventDefault();
+      const email = document.getElementById('authEmail').value;
+      currentUser = { email };
+      localStorage.setItem('mdc_user', JSON.stringify(currentUser));
+      document.getElementById('authLinkText').textContent = email.split('@')[0];
+      closeAuthModal();
+      alert('Successfully signed in!');
+    }
+
+    // Location Access Flow (Kilimall Style)
+    function openLocationModal() {
+      document.getElementById('locationModal').style.display = 'flex';
+    }
+    function closeLocationModal() {
+      document.getElementById('locationModal').style.display = 'none';
+    }
+    function setLocation(region) {
+      currentRegion = region;
+      localStorage.setItem('mdc_region', region);
+      document.getElementById('selectedLocationText').textContent = region;
+      closeLocationModal();
+    }
+    function detectUserGPSLocation() {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          (position) => {
+            // Simulated reverse geocode based on GPS coordinates
+            currentRegion = "Detected Location (GPS)";
+            localStorage.setItem('mdc_region', currentRegion);
+            document.getElementById('selectedLocationText').textContent = currentRegion;
+            closeLocationModal();
+          },
+          (error) => {
+            alert('Unable to retrieve your location. Please select manually.');
+          }
+        );
+      } else {
+        alert('Geolocation is not supported by your browser.');
+      }
+    }
+
+    // Like / Wishlist Management
     window.toggleLike = function(id) {
       if (likedProducts[id]) {
         delete likedProducts[id];
@@ -452,7 +580,6 @@
       const wishlistItemsContainer = document.getElementById('wishlistItemsContainer');
 
       wishlistCount.textContent = likedIds.length;
-
       const likedProds = products.filter(p => likedProducts[p._id || p.name]);
 
       if (likedProds.length === 0) {
@@ -541,17 +668,17 @@
     cartToggleBtn.addEventListener('click', (e) => {
       e.preventDefault();
       cartDrawer.classList.add('open');
-      cartOverlay.classList.add('active');
+      cartOverlay.style.display = 'block';
     });
 
     closeCartBtn.addEventListener('click', () => {
       cartDrawer.classList.remove('open');
-      cartOverlay.classList.remove('active');
+      cartOverlay.style.display = 'none';
     });
 
     cartOverlay.addEventListener('click', () => {
       cartDrawer.classList.remove('open');
-      cartOverlay.classList.remove('active');
+      cartOverlay.style.display = 'none';
     });
 
     window.addToCartEvent = function(index) {
@@ -561,7 +688,7 @@
         cart.push({ name: prod.name, price: itemPrice });
         updateCartUI();
         cartDrawer.classList.add('open');
-        cartOverlay.classList.add('active');
+        cartOverlay.style.display = 'block';
       }
     };
 
