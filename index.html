@@ -21,16 +21,27 @@
     <p>Free countrywide delivery on retail orders over KSh 5,000 | Bulk discounts for wholesale buyers!</p>
   </div>
 
-  <!-- Navigation Bar -->
-  <header class="navbar">
-    <div class="logo">Maison de Cess</div>
+  <!-- Navigation Bar with Integrated Search Bar -->
+  <header class="navbar" style="display: flex; align-items: center; justify-content: space-between; padding: 15px 5%; background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(255, 182, 193, 0.3); position: sticky; top: 0; z-index: 100;">
+    
+    <!-- Left: Logo -->
+    <div class="logo" style="font-size: 1.5rem; font-weight: 700; letter-spacing: 2px; color: #724e5b; white-space: nowrap;">
+      Maison de Cess
+    </div>
+
+    <!-- Center: Search Bar -->
+    <div class="nav-search-container" style="flex: 1; max-width: 450px; margin: 0 25px;">
+      <input type="text" id="productSearchInput" placeholder="Search products or categories..." oninput="filterProducts()" style="width: 100%; padding: 10px 20px; border: 1px solid #f2c4ce; border-radius: 25px; font-size: 0.9rem; background: rgba(255, 255, 255, 0.95); color: #52343f; outline: none; box-shadow: 0 3px 10px rgba(232, 180, 184, 0.15);">
+    </div>
+
+    <!-- Right: Navigation Links & Cart -->
     <nav>
-      <ul>
-        <li><a href="index.html">Home</a></li>
-        <li><a href="#retail-shop">Shop</a></li>
-        <li><a href="#wholesale" class="btn-wholesale">Wholesale Inquiry</a></li>
-        <li><a href="admin.html" style="color:#d47a8f; font-weight:bold;">Admin</a></li>
-        <li><a class="cart-link" id="cartToggleBtn">🛒 Cart <span class="cart-badge" id="cartCount">0</span></a></li>
+      <ul style="display: flex; list-style: none; gap: 20px; align-items: center; margin: 0; padding: 0;">
+        <li><a href="index.html" style="text-decoration: none; color: #5c444e; font-weight: 600; font-size: 0.9rem;">Home</a></li>
+        <li><a href="#retail-shop" style="text-decoration: none; color: #5c444e; font-weight: 600; font-size: 0.9rem;">Shop</a></li>
+        <li><a href="#wholesale" class="btn-wholesale" style="text-decoration: none; font-size: 0.9rem;">Wholesale</a></li>
+        <li><a href="admin.html" style="text-decoration: none; color:#d47a8f; font-weight:bold; font-size: 0.9rem;">Admin</a></li>
+        <li><a class="cart-link" id="cartToggleBtn" style="text-decoration: none; color: #5c444e; font-weight: 600; cursor: pointer; font-size: 0.9rem;">🛒 Cart <span class="cart-badge" id="cartCount">0</span></a></li>
       </ul>
     </nav>
   </header>
@@ -57,11 +68,6 @@
 
   <!-- Dynamic Featured Products Section -->
   <section class="products-section" id="retail-shop">
-    <!-- Product Search Bar -->
-    <div style="max-width: 400px; margin: 0 auto 35px auto;">
-      <input type="text" id="productSearchInput" placeholder="Search products or categories..." oninput="filterProducts()" style="width: 100%; padding: 14px 22px; border: 1px solid #f2c4ce; border-radius: 25px; font-size: 0.95rem; background: rgba(255, 255, 255, 0.9); outline: none; box-shadow: 0 4px 15px rgba(232, 180, 184, 0.15);">
-    </div>
-
     <div class="product-grid" id="userProductsGrid">
       <!-- Dynamically populated from backend API -->
     </div>
