@@ -58,15 +58,7 @@
     </div>
   </section>
 
-  <!-- Dynamic Categories Grid Section -->
-  <section class="categories">
-    <h2>Shop By Category</h2>
-    <div class="category-grid" id="userCategoriesGrid">
-      <!-- Dynamically populated -->
-    </div>
-  </section>
-
-  <!-- Main Content Layout with Left Vertical Sidebar & Product Grid -->
+  <!-- Main Content Layout with Left Vertical Rounded Sidebar & Product Grid -->
   <section class="retail-section-wrapper" id="retail-shop" style="max-width: 1300px; margin: 40px auto; padding: 0 5%;">
     <div style="display: flex; gap: 30px; align-items: flex-start;">
       
@@ -218,7 +210,6 @@
     let categories = JSON.parse(localStorage.getItem('mdc_categories')) || defaultCategories;
     let products = [];
 
-    const userCategoriesGrid = document.getElementById('userCategoriesGrid');
     const userProductsGrid = document.getElementById('userProductsGrid');
     const wholesaleCategorySelect = document.getElementById('wholesaleCategorySelect');
     const sidebarCategoryList = document.getElementById('sidebarCategoryList');
@@ -237,19 +228,12 @@
     }
 
     function renderCategories() {
-      userCategoriesGrid.innerHTML = '';
       if (sidebarCategoryList) {
         sidebarCategoryList.innerHTML = `<li onclick="filterByCategory('all', this)" class="sidebar-cat-item active-sidebar-item" style="padding: 10px 16px; border-radius: 20px; cursor: pointer; color: #fff; background: #d47a8f; font-weight: 600; transition: all 0.2s;">✨ All Categories</li>`;
       }
       wholesaleCategorySelect.innerHTML = '<option value="" disabled selected>Primary Interest</option>';
 
       categories.forEach(cat => {
-        userCategoriesGrid.innerHTML += `
-          <div class="category-card float-on-hover" onclick="filterByCategory('${cat}')" style="cursor: pointer;">
-            <h3>${cat}</h3>
-            <p>Curated collection</p>
-          </div>
-        `;
         if (sidebarCategoryList) {
           sidebarCategoryList.innerHTML += `
             <li onclick="filterByCategory('${cat}', this)" class="sidebar-cat-item" style="padding: 10px 16px; border-radius: 20px; cursor: pointer; color: #5c444e; font-size: 0.95rem; display: flex; justify-content: space-between; align-items: center; transition: all 0.2s;" onmouseover="if(!this.classList.contains('active-sidebar-item'))this.style.background='rgba(232,180,184,0.25)'" onmouseout="if(!this.classList.contains('active-sidebar-item'))this.style.background='transparent'">
