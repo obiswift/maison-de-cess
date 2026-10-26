@@ -159,6 +159,21 @@
       box-shadow: 0 15px 40px rgba(0,0,0,0.2);
       position: relative;
     }
+
+    /* Slow continuous rotation animation for the 3D-styled SVG location pin */
+    @keyframes slowRotate {
+      0% { transform: perspective(300px) rotateY(0deg); }
+      100% { transform: perspective(300px) rotateY(360deg); }
+    }
+    .rotating-3d-pin {
+      display: inline-block;
+      width: 18px;
+      height: 18px;
+      vertical-align: middle;
+      animation: slowRotate 4s linear infinite;
+      transform-style: preserve-3d;
+      filter: drop-shadow(0 2px 4px rgba(212, 122, 143, 0.4));
+    }
   </style>
 </head>
 <body>
@@ -166,11 +181,18 @@
   <!-- Background 3D Canvas -->
   <canvas id="bg-canvas"></canvas>
 
-  <!-- Top Announcement Bar with Flag Selector -->
+  <!-- Top Announcement Bar with Flag Selector & 3D Rotating Pin Icon -->
   <div class="top-bar" style="display: flex; justify-content: space-between; align-items: center; padding: 6px 5%;">
     <p style="margin: 0;">Free countrywide delivery on retail orders over KSh 5,000 | Bulk discounts for wholesale buyers!</p>
-    <div style="cursor: pointer; font-size: 0.85rem; font-weight: 600;" onclick="openLocationModal()">
-      <span id="selectedFlag">🇰🇪</span> <span id="selectedLocationText">Kenya</span> 📍 (Detect Location)
+    <div style="cursor: pointer; font-size: 0.85rem; font-weight: 600; display: flex; align-items: center; gap: 6px;" onclick="openLocationModal()">
+      <span id="selectedFlag">🇰🇪</span> <span id="selectedLocationText">Kenya</span> 
+      <!-- 3D Vector Rotating Pin Icon -->
+      <span class="rotating-3d-pin" title="Location Pin">
+        <svg viewBox="0 0 24 24" fill="#d47a8f" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+        </svg>
+      </span> 
+      (Detect Location)
     </div>
   </div>
 
