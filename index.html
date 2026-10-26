@@ -159,6 +159,20 @@
       box-shadow: 0 15px 40px rgba(0,0,0,0.2);
       position: relative;
     }
+
+    /* Slow continuous rotation animation for the location pin icon */
+    @keyframes slowRotate {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+    .rotating-pin {
+      width: 16px;
+      height: 16px;
+      object-fit: contain;
+      vertical-align: middle;
+      display: inline-block;
+      animation: slowRotate 8s linear infinite;
+    }
   </style>
 </head>
 <body>
@@ -169,8 +183,9 @@
   <!-- Top Announcement Bar with Flag Selector -->
   <div class="top-bar" style="display: flex; justify-content: space-between; align-items: center; padding: 6px 5%;">
     <p style="margin: 0;">Free countrywide delivery on retail orders over KSh 5,000 | Bulk discounts for wholesale buyers!</p>
-    <div style="cursor: pointer; font-size: 0.85rem; font-weight: 600;" onclick="openLocationModal()">
-      <span id="selectedFlag">🇰🇪</span> <span id="selectedLocationText">Kenya</span> 📍 (Detect Location)
+    <div style="cursor: pointer; font-size: 0.85rem; font-weight: 600; display: flex; align-items: center; gap: 5px;" onclick="openLocationModal()">
+      <span id="selectedFlag">🇰🇪</span> <span id="selectedLocationText">Kenya</span> 
+      <img src="location-icon.png" alt="Location" class="rotating-pin"> (Detect Location)
     </div>
   </div>
 
@@ -316,7 +331,9 @@
       <p style="color:#8c6875; font-size:0.85rem; margin-bottom:20px;">Choose your delivery region or let us detect it via browser location.</p>
       
       <div style="display: flex; flex-direction: column; gap: 10px;">
-        <button onclick="openLocationModal()" style="padding:10px; border:1px solid #d47a8f; background:#fbe8eb; color:#52343f; border-radius:10px; font-weight:600; cursor:pointer; margin-bottom:5px;">📍 Detect My Location via Browser</button>
+        <button onclick="openLocationModal()" style="padding:10px; border:1px solid #d47a8f; background:#fbe8eb; color:#52343f; border-radius:10px; font-weight:600; cursor:pointer; margin-bottom:5px;">
+          <img src="location-icon.png" alt="Pin" style="width: 14px; height: 14px; vertical-align: middle;"> Detect My Location via Browser
+        </button>
         <button onclick="setLocation('Kenya', '🇰🇪')" style="padding:10px; border:1px solid #d47a8f; background:#fff; color:#52343f; border-radius:10px; font-weight:600; cursor:pointer; text-align:left; padding-left:20px;">🇰🇪 Kenya (Countrywide Delivery)</button>
         <button onclick="setLocation('Uganda', '🇺🇬')" style="padding:10px; border:1px solid #d47a8f; background:#fff; color:#52343f; border-radius:10px; font-weight:600; cursor:pointer; text-align:left; padding-left:20px;">🇺🇬 Uganda</button>
         <button onclick="setLocation('Tanzania', '🇹🇿')" style="padding:10px; border:1px solid #d47a8f; background:#fff; color:#52343f; border-radius:10px; font-weight:600; cursor:pointer; text-align:left; padding-left:20px;">🇹🇿 Tanzania</button>
