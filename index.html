@@ -330,20 +330,26 @@
     <img id="modalImage" style="max-width:90%; max-height:85vh; border-radius:16px; box-shadow: 0 15px 40px rgba(0,0,0,0.4);">
   </div>
 
-  <!-- Sign In / Registration Modal (With Email & Real Google Auth) -->
+  <!-- Sign In / Registration Modal (With Full Name, Email, Password & Real Google Auth) -->
   <div class="modal-container" id="authModal">
     <div class="modal-content">
       <span onclick="closeAuthModal()" style="position:absolute; top:15px; right:20px; font-size:22px; cursor:pointer; color:#724e5b;">&times;</span>
       <h3 style="color:#52343f; margin-top:0; margin-bottom:15px; font-size:1.3rem; text-align:center;">Sign In to Maison de Cess</h3>
       
       <form onsubmit="handleSignIn(event)">
+        <!-- Full Name Input -->
+        <div style="margin-bottom: 12px;">
+          <input type="text" id="authName" placeholder="Full Name" required style="width:100%; padding:10px 14px; border:1px solid #f2c4ce; border-radius:10px; font-size:0.9rem; outline:none; box-sizing:border-box;">
+        </div>
+        <!-- Email Input -->
         <div style="margin-bottom: 12px;">
           <input type="email" id="authEmail" placeholder="Enter your email" required style="width:100%; padding:10px 14px; border:1px solid #f2c4ce; border-radius:10px; font-size:0.9rem; outline:none; box-sizing:border-box;">
         </div>
+        <!-- Password Input -->
         <div style="margin-bottom: 15px;">
           <input type="password" id="authPassword" placeholder="Password" required style="width:100%; padding:10px 14px; border:1px solid #f2c4ce; border-radius:10px; font-size:0.9rem; outline:none; box-sizing:border-box;">
         </div>
-        <button type="submit" style="width:100%; background:#d47a8f; color:white; border:none; border-radius:20px; padding:10px; font-weight:600; cursor:pointer; margin-bottom: 10px;">Sign In with Email</button>
+        <button type="submit" style="width:100%; background:#d47a8f; color:white; border:none; border-radius:20px; padding:10px; font-weight:600; cursor:pointer; margin-bottom: 10px;">Continue with Email</button>
       </form>
 
       <div style="text-align:center; margin: 10px 0; color:#8c6875; font-size:0.85rem;">OR</div>
@@ -704,16 +710,25 @@
       }
     });
 
-    // Email Sign In
+    // Email Sign In with Form Input Fields
     async function handleSignIn(e) {
       e.preventDefault();
-      const email = document.getElementById('authEmail').value;
-      const name = prompt("Enter your preferred display name:", email.split('@')[0]) || email.split('@')[0];
+      const name = document.getElementById('authName').value.trim();
+      const email = document.getElementById('authEmail').value.trim();
+      
+      if (!name || !email) return;
+
       currentUser = { name, email, provider: 'Email', signedUpAt: new Date() };
       localStorage.setItem('mdc_user', JSON.stringify(currentUser));
       document.getElementById('authLinkText').textContent = name;
       
       await syncUserToDatabase(currentUser);
+      
+      // Clear input fields
+      document.getElementById('authName').value = '';
+      document.getElementById('authEmail').value = '';
+      document.getElementById('authPassword').value = '';
+
       closeAuthModal();
       alert('Successfully signed in and registered!');
     }
