@@ -3,6 +3,7 @@ const path = require('path');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const Product = require('./models/Product');
+const User = require('./models/User'); // Import the User model
 
 const app = express();
 
@@ -65,6 +66,36 @@ app.delete('/api/products/:id', async (req, res) => {
       return res.status(404).json({ error: 'Product not found' });
     }
     res.json({ message: 'Product deleted successfully' });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// --- USER API ROUTES ---
+
+// 1. Register / Sync User on Login
+app.post('/api/users', async (req, res) => {
+  try {
+    const { email, name, provider, signedUpAt } = req.body;
+    let user = await User.findOne({ email });
+    if (!user) {
+      user = new User({ email, name, provider, signedUpAt });
+      await user.save();
+    } else {
+      user.name = name || user.name;
+      await user.save();
+    }
+    res.status(200).json({ success: true, user });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// 2. Get All Users for Admin Portal
+app.get('/api/users', async (req, res) => {
+  try {
+    const users = await User.find().sort({ signedUpAt: -1 });
+    res.json(users);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
