@@ -771,7 +771,10 @@
     function closeAuthModal() { document.getElementById('authModal').style.display = 'none'; }
     
     window.toggleLike = function(id) {
-      if (!currentUser) { alert('Please sign in first.'); openAuthModal(); return; }
+      if (!currentUser) { 
+        openAuthModal(); 
+        return; 
+      }
       if (likedProducts[id]) delete likedProducts[id]; else likedProducts[id] = true;
       localStorage.setItem('mdc_likes', JSON.stringify(likedProducts));
       renderProductsGrid(products);
@@ -824,7 +827,10 @@
 
     wishlistToggleBtn.addEventListener('click', (e) => {
       e.preventDefault();
-      if (!currentUser) { alert('Please sign in to view your wishlist.'); openAuthModal(); return; }
+      if (!currentUser) { 
+        openAuthModal(); 
+        return; 
+      }
       updateWishlistUI();
       wishlistDrawer.classList.add('open');
       wishlistOverlay.style.display = 'block';
@@ -860,7 +866,10 @@
     cartOverlay.addEventListener('click', () => { cartDrawer.classList.remove('open'); cartOverlay.style.display = 'none'; });
 
     window.addToCartEvent = function(index) {
-      if (!currentUser) { alert('Please sign in first to add items to your cart.'); openAuthModal(); return; }
+      if (!currentUser) { 
+        openAuthModal(); 
+        return; 
+      }
       const prod = products[index];
       if (prod) {
         cart.push({ name: prod.name, price: prod.price || prod.retailPrice || 0 });
@@ -893,7 +902,10 @@
 
     window.removeItem = function(index) { cart.splice(index, 1); updateCartUI(); };
     function proceedToCheckout() {
-      if (!currentUser) { alert('Please sign in to proceed to checkout.'); openAuthModal(); return; }
+      if (!currentUser) { 
+        openAuthModal(); 
+        return; 
+      }
       if (cart.length === 0) { alert('Your cart is empty.'); return; }
       alert('Redirecting to secure checkout...');
     }
