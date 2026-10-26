@@ -436,28 +436,6 @@
       meshes.push({ mesh, speedX: (Math.random() - 0.5) * 0.008, speedY: (Math.random() - 0.5) * 0.008 });
     }
 
-    // --- TRUE 3D LOCATION PIN IN THE BACKGROUND ---
-    const pinGroup = new THREE.Group();
-    const pinMaterial = new THREE.MeshStandardMaterial({ color: 0xd47a8f, roughness: 0.2, metalness: 0.5 });
-    
-    // Top bulb of the pin
-    const sphereGeom = new THREE.SphereGeometry(0.8, 32, 32);
-    const pinSphere = new THREE.Mesh(sphereGeom, pinMaterial);
-    pinSphere.position.y = 1.0;
-    pinGroup.add(pinSphere);
-
-    // Bottom pointed cone of the pin
-    const coneGeom = new THREE.ConeGeometry(0.8, 2.2, 32);
-    const pinCone = new THREE.Mesh(coneGeom, pinMaterial);
-    pinCone.position.y = -0.3;
-    pinCone.rotation.x = Math.PI; // Point downwards
-    pinGroup.add(pinCone);
-
-    pinGroup.scale.set(0.7, 0.7, 0.7);
-    pinGroup.position.set(0, 0, -2); // Positioned nicely in the 3D scene
-    scene.add(pinGroup);
-    // ----------------------------------------------
-
     camera.position.z = 8;
 
     let mouseX = 0, mouseY = 0;
@@ -474,9 +452,6 @@
         item.mesh.rotation.x += item.speedX;
         item.mesh.rotation.y += item.speedY;
       });
-
-      // Slowly rotate the true 3D location pin on its position
-      pinGroup.rotation.y += 0.01;
 
       camera.position.x += (mouseX * 2 - camera.position.x) * 0.05;
       camera.position.y += (-mouseY * 2 - camera.position.y) * 0.05;
