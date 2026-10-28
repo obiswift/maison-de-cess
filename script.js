@@ -128,6 +128,7 @@ window.buyNowEvent = function(index) {
     const hasValidColors = prod.colors && 
                            typeof prod.colors === 'string' && 
                            prod.colors.trim() !== '' && 
+                           prod.colors.toLowerCase() !== 'none' &&
                            prod.colors.toLowerCase() !== 'undefined' && 
                            prod.colors.toLowerCase() !== 'null';
 
