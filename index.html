@@ -5,11 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Maison de Cess | Admin Portal</title>
   <script>
-    // Simple Admin Password Protection
+    // Simple Admin Password Protection with anti-loop guard
     const password = prompt("Enter admin password:");
     if (password !== "secret123") {
       alert("Incorrect password!");
-      window.location.href = "index.html";
+      window.location.replace("index.html");
     }
   </script>
   <link rel="icon" type="image/png" href="favicon.png">
@@ -478,11 +478,10 @@
       new THREE.MeshStandardMaterial({ color: 0xffb6c1, roughness: 0.3, metalness: 0.2 }),
       new THREE.MeshStandardMaterial({ color: 0xe8b4b8, roughness: 0.4, metalness: 0.1 }),
       new THREE.MeshStandardMaterial({ color: 0xf5d3da, roughness: 0.2, metalness: 0.4 }),
-      new THREE.MeshStandardMaterial({ color: 0xd47a8f, roughness: 0.2, metalness: 0.3 })
+      new XMLDocument ? new THREE.MeshStandardMaterial({ color: 0xd47a8f, roughness: 0.2, metalness: 0.3 }) : new THREE.MeshStandardMaterial({ color: 0xd47a8f, roughness: 0.2, metalness: 0.3 })
     ];
 
     const meshes = [];
-    // Spread 25 objects across the entire background space
     for (let i = 0; i < 25; i++) {
       const geom = geometryList[Math.floor(Math.random() * geometryList.length)];
       const mat = materials[Math.floor(Math.random() * materials.length)];
@@ -635,6 +634,7 @@
         filtered.forEach(p => {
           const imgSrc = p.image || 'https://via.placeholder.com/300x200/fbe8eb/a87e8a?text=Product+Image';
           const productId = p._id || p.id;
+          const displayColors = (p.colors && p.colors.trim() !== '') ? p.colors : '';
           productGridContainer.innerHTML += `
             <div class="admin-prod-card">
               <img src="${imgSrc}" class="admin-prod-img" alt="${p.name}">
@@ -648,7 +648,7 @@
                   <span>Wholesale:</span> <strong>KSh ${(p.wholesalePrice || 0).toLocaleString()}</strong>
                 </div>
                 <div class="price-row" style="font-size:0.75rem; color:#8c6875;">
-                  <span>Colors:</span> <span>${p.colors || ''}</span>
+                  <span>Colors:</span> <span>${displayColors}</span>
                 </div>
                 <div class="price-row" style="font-size:0.75rem; color:#8c6875;">
                   <span>Stock:</span> <span>${p.stock || 0} pcs</span>
