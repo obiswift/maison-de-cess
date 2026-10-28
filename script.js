@@ -126,15 +126,22 @@ window.buyNowEvent = function(index) {
   }
   const prod = products[index];
   if (prod) {
+    // Strictly validate that colors exist and aren't empty, null, or undefined strings
+    const hasValidColors = prod.colors && 
+                           typeof prod.colors === 'string' && 
+                           prod.colors.trim() !== '' && 
+                           prod.colors.toLowerCase() !== 'undefined' && 
+                           prod.colors.toLowerCase() !== 'null';
+
     const product = {
       name: prod.name,
       price: prod.price || prod.retailPrice || 0,
       image: prod.image || 'https://via.placeholder.com/300x300/fbe8eb/a87e8a?text=Product+Image',
       category: prod.category || 'General',
-      colors: prod.colors ? prod.colors.split(' ').filter(c => c.trim() !== '') : []
+      colors: hasValidColors ? prod.colors.split(' ').filter(c => c.trim() !== '') : []
     };
 
-    // Generate color radio buttons dynamically only if colors exist
+    // Generate color radio buttons dynamically only if actual valid colors exist
     let colorSectionHTML = '';
     if (product.colors.length > 0) {
       let colorOptionsHTML = '';
