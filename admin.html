@@ -620,6 +620,7 @@
         filtered.forEach(p => {
           const imgSrc = p.image || 'https://via.placeholder.com/300x200/fbe8eb/a87e8a?text=Product+Image';
           const productId = p._id || p.id;
+          const displayColors = (p.colors && p.colors.trim() !== '') ? p.colors : '';
           productGridContainer.innerHTML += `
             <div class="admin-prod-card">
               <img src="${imgSrc}" class="admin-prod-img" alt="${p.name}">
@@ -633,7 +634,7 @@
                   <span>Wholesale:</span> <strong>KSh ${(p.wholesalePrice || 0).toLocaleString()}</strong>
                 </div>
                 <div class="price-row" style="font-size:0.75rem; color:#8c6875;">
-                  <span>Colors:</span> <span>${p.colors || 'None'}</span>
+                  <span>Colors:</span> <span>${displayColors}</span>
                 </div>
                 <div class="price-row" style="font-size:0.75rem; color:#8c6875;">
                   <span>Stock:</span> <span>${p.stock || 0} pcs</span>
