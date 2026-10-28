@@ -455,7 +455,7 @@
     ];
 
     const meshes = [];
-    const count = 35; // Spread 35 objects across the full viewport
+    const count = 35;
     for (let i = 0; i < count; i++) {
       const geom = geometryList[Math.floor(Math.random() * geometryList.length)];
       const mat = materials[Math.floor(Math.random() * materials.length)];
@@ -472,12 +472,16 @@
       mesh.rotation.y = Math.random() * Math.PI;
 
       scene.add(mesh);
+      
+      // Store individual drift properties for smooth floating across the screen
       meshes.push({ 
         mesh, 
-        speedX: (Math.random() - 0.5) * 0.0015, // Slowed down rotation speed X
-        speedY: (Math.random() - 0.5) * 0.0015, // Slowed down rotation speed Y
-        floatSpeed: Math.random() * 0.005 + 0.001, // Slower gentle floating wave
-        initialY: mesh.position.y
+        speedX: (Math.random() - 0.5) * 0.0015, // Slow axis rotation speed X
+        speedY: (Math.random() - 0.5) * 0.0015, // Slow axis rotation speed Y
+        driftX: (Math.random() - 0.5) * 0.008,  // Slow drifting speed across X axis
+        driftY: (Math.random() - 0.5) * 0.008,  // Slow drifting speed across Y axis
+        limitX: spreadX / 2,
+        limitY: spreadY / 2
       });
     }
 
@@ -485,20 +489,28 @@
 
     let mouseX = 0, mouseY = 0;
     document.addEventListener('mousemove', (e) => {
-      mouseX = (e.clientX / window.innerWidth - 0.5) * 0.2; // Subtle mouse parallax
+      mouseX = (e.clientX / window.innerWidth - 0.5) * 0.2;
       mouseY = (e.clientY / window.innerHeight - 0.5) * 0.2;
     });
 
-    let clock = new THREE.Clock();
     function animate() {
       requestAnimationFrame(animate);
-      const elapsedTime = clock.getElapsedTime();
 
-      // Animate floating background shapes smoothly and slowly
-      meshes.forEach((item, index) => {
+      // Animate rotation on axis AND positional drift across the screen
+      meshes.forEach((item) => {
+        // Spin slowly on own axis
         item.mesh.rotation.x += item.speedX;
         item.mesh.rotation.y += item.speedY;
-        item.mesh.position.y = item.initialY + Math.sin(elapsedTime * item.floatSpeed + index) * 1.2;
+
+        // Move across the screen
+        item.mesh.position.x += item.driftX;
+        item.mesh.position.y += item.driftY;
+
+        // Loop them back gracefully when they drift past the boundaries
+        if (item.mesh.position.x > item.limitX) item.mesh.position.x = -item.limitX;
+        if (item.mesh.position.x < -item.limitX) item.mesh.position.x = item.limitX;
+        if (item.mesh.position.y > item.limitY) item.mesh.position.y = -item.limitY;
+        if (item.mesh.position.y < -item.limitY) item.mesh.position.y = item.limitY;
       });
 
       camera.position.x += (mouseX * 2 - camera.position.x) * 0.03;
