@@ -125,7 +125,6 @@ window.buyNowEvent = function(index) {
   }
   const prod = products[index];
   if (prod) {
-    // Strictly validate that colors exist and aren't empty, null, or undefined strings
     const hasValidColors = prod.colors && 
                            typeof prod.colors === 'string' && 
                            prod.colors.trim() !== '' && 
@@ -140,7 +139,6 @@ window.buyNowEvent = function(index) {
       colors: hasValidColors ? prod.colors.split(' ').filter(c => c.trim() !== '') : []
     };
 
-    // Generate color radio buttons dynamically only if actual valid colors exist
     let colorSectionHTML = '';
     if (product.colors.length > 0) {
       let colorOptionsHTML = '';
@@ -180,16 +178,13 @@ window.buyNowEvent = function(index) {
             </div>
           </div>
 
-          <!-- Dynamic Color Section (Hides entirely if no colors are provided) -->
           ${colorSectionHTML}
 
-          <!-- Quantity Selection -->
           <div style="margin-bottom:15px;">
             <label style="font-size:0.85rem; color:#52343f; font-weight:600; display:block; margin-bottom:6px;">Quantity:</label>
             <input type="number" id="quickBuyQty" value="1" min="1" oninput="updateModalTotal(${product.price})" style="width:90px; padding:10px; border:1px solid #f2c4ce; border-radius:10px; font-size:0.9rem; outline:none;">
           </div>
 
-          <!-- Live Calculated Total Display -->
           <div style="background:#fbe8eb; padding:12px; border-radius:12px; display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; font-weight:bold; color:#52343f;">
             <span>Total Price:</span>
             <span id="modalTotalPriceDisplay" style="color:#d47a8f; font-size:1.1rem;">KSh ${product.price.toLocaleString()}</span>
@@ -206,7 +201,6 @@ window.buyNowEvent = function(index) {
   }
 };
 
-// Live Multiplier for Quantity Changes
 window.updateModalTotal = function(unitPrice) {
   const qtyInput = document.getElementById('quickBuyQty');
   const totalDisplay = document.getElementById('modalTotalPriceDisplay');
