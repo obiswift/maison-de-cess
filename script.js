@@ -118,7 +118,7 @@ function handleSignOut() {
   alert('Your session has been signed out.');
 }
 
-// Buy Now Button Handler (Opens Kilimall-style product detail view with Space-Separated Dynamic Colors & Quantity Multiplier)
+// Buy Now Button Handler (Opens Kilimall-style product detail view with Conditional Colors & Quantity Multiplier)
 window.buyNowEvent = function(index) {
   if (!currentUser) { 
     if (typeof openAuthModal === 'function') openAuthModal(); 
@@ -131,20 +131,31 @@ window.buyNowEvent = function(index) {
       price: prod.price || prod.retailPrice || 0,
       image: prod.image || 'https://via.placeholder.com/300x300/fbe8eb/a87e8a?text=Product+Image',
       category: prod.category || 'General',
-      // Split colors by space instead of comma
-      colors: prod.colors ? prod.colors.split(' ').filter(c => c.trim() !== '') : ['Pink', 'Black', 'White']
+      colors: prod.colors ? prod.colors.split(' ').filter(c => c.trim() !== '') : []
     };
 
-    // Generate color radio buttons dynamically from space-separated admin settings
-    let colorOptionsHTML = '';
-    product.colors.forEach((col, idx) => {
-      const isChecked = idx === 0 ? 'checked' : '';
-      colorOptionsHTML += `
-        <label style="cursor:pointer; font-size:0.85rem; color:#5c444e;">
-          <input type="radio" name="productColor" value="${col}" ${isChecked}> ${col}
-        </label>
+    // Generate color radio buttons dynamically only if colors exist
+    let colorSectionHTML = '';
+    if (product.colors.length > 0) {
+      let colorOptionsHTML = '';
+      product.colors.forEach((col, idx) => {
+        const isChecked = idx === 0 ? 'checked' : '';
+        colorOptionsHTML += `
+          <label style="cursor:pointer; font-size:0.85rem; color:#5c444e;">
+            <input type="radio" name="productColor" value="${col}" ${isChecked}> ${col}
+          </label>
+        `;
+      });
+
+      colorSectionHTML = `
+        <div style="margin-bottom:15px;">
+          <label style="font-size:0.85rem; color:#52343f; font-weight:600; display:block; margin-bottom:6px;">Select Color:</label>
+          <div style="display:flex; flex-wrap:wrap; gap:15px;">
+            ${colorOptionsHTML}
+          </div>
+        </div>
       `;
-    });
+    }
 
     const modalHTML = `
       <div id="buyNowModal" style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(82,52,63,0.5); backdrop-filter:blur(4px); display:flex; justify-content:center; align-items:center; z-index:5000;">
@@ -163,13 +174,8 @@ window.buyNowEvent = function(index) {
             </div>
           </div>
 
-          <!-- Dynamic Space-Separated Color Selection Option from Admin -->
-          <div style="margin-bottom:15px;">
-            <label style="font-size:0.85rem; color:#52343f; font-weight:600; display:block; margin-bottom:6px;">Select Color:</label>
-            <div style="display:flex; flex-wrap:wrap; gap:15px;">
-              ${colorOptionsHTML}
-            </div>
-          </div>
+          <!-- Dynamic Color Section (Hides entirely if no colors are provided) -->
+          ${colorSectionHTML}
 
           <!-- Quantity Selection -->
           <div style="margin-bottom:15px;">
@@ -214,9 +220,9 @@ function closeBuyNowModal() {
 function checkoutDirectly(unitPrice) {
   const qty = parseInt(document.getElementById('quickBuyQty').value) || 1;
   const colorRadio = document.querySelector('input[name="productColor"]:checked');
-  const selectedColor = colorRadio ? colorRadio.value : 'Standard';
+  const selectedColor = colorRadio ? colorRadio.value : 'N/A';
   const total = unitPrice * qty;
   
-  alert(`Proceeding to secure checkout!\nColor: ${selectedColor}\nQuantity: ${qty}\nTotal: KSh ${total.toLocaleString()}`);
+  alert(`Proceeding to secure checkout!\n${colorRadio ? 'Color: ' + selectedColor + '\n' : ''}Quantity: ${qty}\nTotal: KSh ${total.toLocaleString()}`);
   closeBuyNowModal();
 }
