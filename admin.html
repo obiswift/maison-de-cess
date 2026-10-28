@@ -333,7 +333,7 @@
       </div>
       <div class="stat-card">
         <h4>Database Status</h4>
-        <div class="stat-value" id="dbStatusBadge" style="font-size:1.1rem; color:#2e7d32; margin-top:6px;">🟢 Live & Connected</div>
+        <div class="stat-value" id="dbStatusBadge" style="font-size:1.1rem; color:#2e7d32; margin-top:6px;">Live & Connected</div>
       </div>
     </div>
 
@@ -415,7 +415,7 @@
         <!-- Available Colors Field Updated for Space Separation -->
         <div class="form-group">
           <label for="prodColors">Available Colors (Space Separated)</label>
-          <input type="text" id="prodColors" placeholder="e.g. Pink Black White" value="Pink Black White">
+          <input type="text" id="prodColors" placeholder="e.g. Pink Black White" value="">
         </div>
 
         <div class="form-group">
@@ -546,11 +546,11 @@
           users = [];
         }
 
-        dbStatusBadge.textContent = "🟢 Live & Connected";
+        dbStatusBadge.textContent = "Live & Connected";
         dbStatusBadge.style.color = "#2e7d32";
       } catch (err) {
         console.error('Backend connection error:', err);
-        dbStatusBadge.textContent = "🔴 Server Offline";
+        dbStatusBadge.textContent = "Server Offline";
         dbStatusBadge.style.color = "#c62828";
         products = [];
         users = [];
@@ -633,7 +633,7 @@
                   <span>Wholesale:</span> <strong>KSh ${(p.wholesalePrice || 0).toLocaleString()}</strong>
                 </div>
                 <div class="price-row" style="font-size:0.75rem; color:#8c6875;">
-                  <span>Colors:</span> <span>${p.colors || 'Pink Black White'}</span>
+                  <span>Colors:</span> <span>${p.colors || 'None'}</span>
                 </div>
                 <div class="price-row" style="font-size:0.75rem; color:#8c6875;">
                   <span>Stock:</span> <span>${p.stock || 0} pcs</span>
@@ -688,7 +688,7 @@
         if (modalTitle) modalTitle.textContent = "Add New Product";
         if (productForm) productForm.reset();
         document.getElementById('prodId').value = '';
-        document.getElementById('prodColors').value = 'Pink Black White';
+        document.getElementById('prodColors').value = '';
         currentImageBase64 = '';
         if (imagePreviewContainer) {
           imagePreviewContainer.innerHTML = `<span style="color:#b08d98; font-size:0.85rem;">No image selected</span>`;
@@ -741,15 +741,15 @@
           }
 
           if (response.ok) {
-            alert('✅ Product saved successfully to MongoDB!');
+            alert('Product saved successfully to MongoDB!');
             if (productModal) productModal.classList.remove('active');
             fetchAdminData(); 
           } else {
-            alert('❌ Failed to save product on server.');
+            alert('Failed to save product on server.');
           }
         } catch (err) {
           console.error('Error submitting product:', err);
-          alert('❌ Network error connecting to backend.');
+          alert('Network error connecting to backend.');
         }
       });
     }
@@ -764,7 +764,7 @@
         document.getElementById('prodRetail').value = p.price || p.retailPrice;
         document.getElementById('prodWholesale').value = p.wholesalePrice;
         document.getElementById('prodStock').value = p.stock || 20;
-        document.getElementById('prodColors').value = p.colors || 'Pink Black White';
+        document.getElementById('prodColors').value = p.colors || '';
         
         currentImageBase64 = p.image || '';
         if (imagePreviewContainer) {
@@ -788,11 +788,11 @@
           if (response.ok) {
             fetchAdminData();
           } else {
-            alert('❌ Failed to delete product.');
+            alert('Failed to delete product.');
           }
         } catch (err) {
           console.error('Delete error:', err);
-          alert('❌ Network error connecting to backend.');
+          alert('Network error connecting to backend.');
         }
       }
     };
