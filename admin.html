@@ -412,10 +412,10 @@
           </div>
         </div>
 
-        <!-- Available Colors Field Added -->
+        <!-- Available Colors Field Updated for Space Separation -->
         <div class="form-group">
-          <label for="prodColors">Available Colors (Comma Separated)</label>
-          <input type="text" id="prodColors" placeholder="e.g. Pink, Black, White" value="Pink, Black, White">
+          <label for="prodColors">Available Colors (Space Separated)</label>
+          <input type="text" id="prodColors" placeholder="e.g. Pink Black White" value="Pink Black White">
         </div>
 
         <div class="form-group">
@@ -633,7 +633,7 @@
                   <span>Wholesale:</span> <strong>KSh ${(p.wholesalePrice || 0).toLocaleString()}</strong>
                 </div>
                 <div class="price-row" style="font-size:0.75rem; color:#8c6875;">
-                  <span>Colors:</span> <span>${p.colors || 'Pink, Black, White'}</span>
+                  <span>Colors:</span> <span>${p.colors || 'Pink Black White'}</span>
                 </div>
                 <div class="price-row" style="font-size:0.75rem; color:#8c6875;">
                   <span>Stock:</span> <span>${p.stock || 0} pcs</span>
@@ -688,7 +688,7 @@
         if (modalTitle) modalTitle.textContent = "Add New Product";
         if (productForm) productForm.reset();
         document.getElementById('prodId').value = '';
-        document.getElementById('prodColors').value = 'Pink, Black, White';
+        document.getElementById('prodColors').value = 'Pink Black White';
         currentImageBase64 = '';
         if (imagePreviewContainer) {
           imagePreviewContainer.innerHTML = `<span style="color:#b08d98; font-size:0.85rem;">No image selected</span>`;
@@ -764,7 +764,7 @@
         document.getElementById('prodRetail').value = p.price || p.retailPrice;
         document.getElementById('prodWholesale').value = p.wholesalePrice;
         document.getElementById('prodStock').value = p.stock || 20;
-        document.getElementById('prodColors').value = p.colors || 'Pink, Black, White';
+        document.getElementById('prodColors').value = p.colors || 'Pink Black White';
         
         currentImageBase64 = p.image || '';
         if (imagePreviewContainer) {
