@@ -108,11 +108,11 @@ const MONGO_URI = 'mongodb+srv://traviacafe_db_user:f5JgmO8wOkRgWA7H@cluster0.r6
 mongoose
   .connect(MONGO_URI)
   .then(() => {
-    console.log('✅ Connected to MongoDB Database successfully!');
+    console.log('Connected to MongoDB Database successfully!');
     app.listen(PORT, () => {
-      console.log(`🚀 Server running on http://localhost:${PORT}`);
+      console.log(`Server running on http://localhost:${PORT}`);
     });
   })
   .catch((err) => {
-    console.error('❌ MongoDB Connection Error:', err.message);
+    console.error('MongoDB Connection Error:', err.message);
   });
