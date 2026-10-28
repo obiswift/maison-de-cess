@@ -35,7 +35,6 @@ async function fetchStoreProducts() {
     products = [];
   }
   
-  // If you have a renderProductsGrid function on your index.html, it will run here
   if (typeof renderProductsGrid === 'function') {
     renderProductsGrid(products);
   }
