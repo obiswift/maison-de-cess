@@ -895,7 +895,7 @@
       }
     };
 
-    // Buy Now Button Handler (Opens Kilimall-style product detail view)
+    // Updated Buy Now Button Handler (Includes Color Selection & Live Quantity Multiplier)
     window.buyNowEvent = function(index) {
       if (!currentUser) { 
         openAuthModal(); 
@@ -927,9 +927,26 @@
                 </div>
               </div>
 
-              <div style="margin-bottom:20px;">
+              <!-- Color Selection Option -->
+              <div style="margin-bottom:15px;">
+                <label style="font-size:0.85rem; color:#52343f; font-weight:600; display:block; margin-bottom:6px;">Select Color:</label>
+                <div style="display:flex; gap:15px;">
+                  <label style="cursor:pointer; font-size:0.85rem; color:#5c444e;"><input type="radio" name="productColor" value="Blush Pink" checked> Pink</label>
+                  <label style="cursor:pointer; font-size:0.85rem; color:#5c444e;"><input type="radio" name="productColor" value="Classic Black"> Black</label>
+                  <label style="cursor:pointer; font-size:0.85rem; color:#5c444e;"><input type="radio" name="productColor" value="Pure White"> White</label>
+                </div>
+              </div>
+
+              <!-- Quantity Selection -->
+              <div style="margin-bottom:15px;">
                 <label style="font-size:0.85rem; color:#52343f; font-weight:600; display:block; margin-bottom:6px;">Quantity:</label>
-                <input type="number" id="quickBuyQty" value="1" min="1" style="width:90px; padding:10px; border:1px solid #f2c4ce; border-radius:10px; font-size:0.9rem; outline:none;">
+                <input type="number" id="quickBuyQty" value="1" min="1" oninput="updateModalTotal(${product.price})" style="width:90px; padding:10px; border:1px solid #f2c4ce; border-radius:10px; font-size:0.9rem; outline:none;">
+              </div>
+
+              <!-- Live Calculated Total Display -->
+              <div style="background:#fbe8eb; padding:12px; border-radius:12px; display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; font-weight:bold; color:#52343f;">
+                <span>Total Price:</span>
+                <span id="modalTotalPriceDisplay" style="color:#d47a8f; font-size:1.1rem;">KSh ${product.price.toLocaleString()}</span>
               </div>
 
               <button onclick="checkoutDirectly(${product.price})" style="width:100%; background:#d47a8f; color:white; border:none; padding:12px; border-radius:25px; font-weight:600; cursor:pointer; font-size:0.95rem; box-shadow:0 4px 15px rgba(212,122,143,0.3);">Proceed to Secure Checkout</button>
@@ -943,15 +960,30 @@
       }
     };
 
+    // Live Multiplier for Quantity Changes
+    window.updateModalTotal = function(unitPrice) {
+      const qtyInput = document.getElementById('quickBuyQty');
+      const totalDisplay = document.getElementById('modalTotalPriceDisplay');
+      
+      let qty = parseInt(qtyInput.value) || 1;
+      if (qty < 1) qty = 1;
+      
+      const total = unitPrice * qty;
+      totalDisplay.textContent = 'KSh ' + total.toLocaleString();
+    };
+
     function closeBuyNowModal() {
       const modal = document.getElementById('buyNowModal');
       if (modal) modal.remove();
     }
 
-    function checkoutDirectly(price) {
+    function checkoutDirectly(unitPrice) {
       const qty = parseInt(document.getElementById('quickBuyQty').value) || 1;
-      const total = price * qty;
-      alert(`Proceeding to instant checkout for total: KSh ${total.toLocaleString()}`);
+      const colorRadio = document.querySelector('input[name="productColor"]:checked');
+      const selectedColor = colorRadio ? colorRadio.value : 'Standard';
+      const total = unitPrice * qty;
+      
+      alert(`Proceeding to secure checkout!\nColor: ${selectedColor}\nQuantity: ${qty}\nTotal: KSh ${total.toLocaleString()}`);
       closeBuyNowModal();
     }
 
