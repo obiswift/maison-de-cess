@@ -118,7 +118,7 @@ function handleSignOut() {
   alert('Your session has been signed out.');
 }
 
-// Buy Now Button Handler (Opens Kilimall-style product detail view with Dynamic Colors & Quantity Multiplier)
+// Buy Now Button Handler (Opens Kilimall-style product detail view with Space-Separated Dynamic Colors & Quantity Multiplier)
 window.buyNowEvent = function(index) {
   if (!currentUser) { 
     if (typeof openAuthModal === 'function') openAuthModal(); 
@@ -131,10 +131,11 @@ window.buyNowEvent = function(index) {
       price: prod.price || prod.retailPrice || 0,
       image: prod.image || 'https://via.placeholder.com/300x300/fbe8eb/a87e8a?text=Product+Image',
       category: prod.category || 'General',
-      colors: prod.colors ? prod.colors.split(',').map(c => c.trim()) : ['Pink', 'Black', 'White']
+      // Split colors by space instead of comma
+      colors: prod.colors ? prod.colors.split(' ').filter(c => c.trim() !== '') : ['Pink', 'Black', 'White']
     };
 
-    // Generate color radio buttons dynamically from admin settings
+    // Generate color radio buttons dynamically from space-separated admin settings
     let colorOptionsHTML = '';
     product.colors.forEach((col, idx) => {
       const isChecked = idx === 0 ? 'checked' : '';
@@ -162,7 +163,7 @@ window.buyNowEvent = function(index) {
             </div>
           </div>
 
-          <!-- Dynamic Color Selection Option from Admin -->
+          <!-- Dynamic Space-Separated Color Selection Option from Admin -->
           <div style="margin-bottom:15px;">
             <label style="font-size:0.85rem; color:#52343f; font-weight:600; display:block; margin-bottom:6px;">Select Color:</label>
             <div style="display:flex; flex-wrap:wrap; gap:15px;">
