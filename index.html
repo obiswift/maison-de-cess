@@ -13,6 +13,25 @@
   <!-- Google Identity Services SDK -->
   <script src="https://accounts.google.com/gsi/client" async defer></script>
   <style>
+    /* Immersive 3D Background Canvas Styling */
+    #bg-canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      pointer-events: none;
+      z-index: -1;
+    }
+
+    body {
+      background-color: #fff9fa;
+      color: #52343f;
+      font-family: 'Playfair Display', serif, sans-serif;
+      margin: 0;
+      overflow-x: hidden;
+    }
+
     /* Responsive Side-by-Side Layout & Sticky Sidebar */
     .retail-section-wrapper > div {
       display: flex !important;
@@ -26,7 +45,8 @@
       width: 260px !important;
       flex-shrink: 0 !important;
       z-index: 50 !important;
-      background: rgba(255, 255, 255, 0.98) !important;
+      background: rgba(255, 255, 255, 0.92) !important;
+      backdrop-filter: blur(10px);
     }
     .product-grid {
       display: grid !important;
@@ -74,6 +94,8 @@
     }
     .product-card {
       position: relative;
+      background: rgba(255, 255, 255, 0.9) !important;
+      backdrop-filter: blur(8px);
     }
     /* Drawers & Modals Overlays */
     .drawer-overlay {
@@ -180,7 +202,7 @@
   <canvas id="bg-canvas"></canvas>
 
   <!-- Top Announcement Bar with Flag Selector & 3D Rotating Pin Icon -->
-  <div class="top-bar" style="display: flex; justify-content: space-between; align-items: center; padding: 6px 5%;">
+  <div class="top-bar" style="display: flex; justify-content: space-between; align-items: center; padding: 6px 5%; background: rgba(255,255,255,0.8); backdrop-filter: blur(5px);">
     <p style="margin: 0;">Free countrywide delivery on retail orders over KSh 5,000 | Bulk discounts for wholesale buyers!</p>
     <div style="cursor: pointer; font-size: 0.85rem; font-weight: 600; display: flex; align-items: center; gap: 6px;" onclick="openLocationModal()">
       <span id="selectedFlag">🇰🇪</span> <span id="selectedLocationText">Kenya</span> 
@@ -195,7 +217,7 @@
   </div>
 
   <!-- Navigation Bar with Integrated Search Bar -->
-  <header class="navbar" style="display: flex; align-items: center; justify-content: space-between; padding: 15px 5%; background: rgba(255, 255, 255, 0.95); border-bottom: 1px solid rgba(255, 182, 193, 0.3); position: sticky; top: 0; z-index: 100;">
+  <header class="navbar" style="display: flex; align-items: center; justify-content: space-between; padding: 15px 5%; background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); border-bottom: 1px solid rgba(255, 182, 193, 0.3); position: sticky; top: 0; z-index: 100;">
     
     <!-- Left: Logo & Brand Name -->
     <div class="logo" style="display: flex; align-items: center; gap: 10px; font-size: 1.5rem; font-weight: 700; letter-spacing: 2px; color: #724e5b; white-space: nowrap;">
@@ -268,13 +290,13 @@
   </header>
 
   <!-- Hero Section -->
-  <section class="hero">
-    <div class="hero-content float-on-hover">
-      <h1>Modern Apparel & Home Essentials</h1>
-      <p>Curated collections for everyday living. Available for personal shopping and wholesale distribution.</p>
-      <div class="hero-buttons">
-        <a href="#retail-shop" class="btn primary-btn float-on-hover">Shop Retail</a>
-        <a href="#wholesale" class="btn secondary-btn float-on-hover">Wholesale Portal</a>
+  <section class="hero" style="background: rgba(255, 255, 255, 0.4); backdrop-filter: blur(5px); padding: 60px 0; text-align: center;">
+    <div class="hero-content float-on-hover" style="max-width: 800px; margin: 0 auto; padding: 0 20px;">
+      <h1 style="font-size: 2.8rem; color: #52343f; margin-bottom: 15px;">Modern Apparel & Home Essentials</h1>
+      <p style="font-size: 1.1rem; color: #8c6875; margin-bottom: 25px;">Curated collections for everyday living. Available for personal shopping and wholesale distribution.</p>
+      <div class="hero-buttons" style="display: flex; gap: 15px; justify-content: center;">
+        <a href="#retail-shop" class="btn primary-btn float-on-hover" style="background: #d47a8f; color: white; padding: 12px 25px; border-radius: 25px; text-decoration: none; font-weight: bold;">Shop Retail</a>
+        <a href="#wholesale" class="btn secondary-btn float-on-hover" style="background: #f2c4ce; color: #52343f; padding: 12px 25px; border-radius: 25px; text-decoration: none; font-weight: bold;">Wholesale Portal</a>
       </div>
     </div>
   </section>
@@ -284,7 +306,7 @@
     <div>
       
       <!-- Left Vertical Category Sidebar (Sticky) -->
-      <aside class="category-sidebar" style="background: rgba(255, 255, 255, 0.98); border-radius: 16px; border: 1px solid rgba(232, 180, 184, 0.4); box-shadow: 0 8px 32px rgba(82, 52, 63, 0.08); overflow: hidden; padding: 12px;">
+      <aside class="category-sidebar" style="border-radius: 16px; border: 1px solid rgba(232, 180, 184, 0.4); box-shadow: 0 8px 32px rgba(82, 52, 63, 0.08); overflow: hidden; padding: 12px;">
         <div style="background: #d47a8f; color: white; padding: 10px 14px; border-radius: 12px; font-weight: 700; font-size: 0.95rem; display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
           Categories
         </div>
@@ -304,20 +326,20 @@
   </section>
 
   <!-- Wholesale Inquiry Section -->
-  <section class="wholesale-section" id="wholesale">
-    <div class="wholesale-container">
-      <h2>Become a Wholesale Partner</h2>
-      <p>Get access to bulk pricing, exclusive catalog items, and priority shipping.</p>
+  <section class="wholesale-section" id="wholesale" style="background: rgba(251, 232, 235, 0.6); backdrop-filter: blur(8px); padding: 50px 20px; margin-top: 60px;">
+    <div class="wholesale-container" style="max-width: 600px; margin: 0 auto; text-align: center;">
+      <h2 style="color: #52343f; font-size: 2rem; margin-bottom: 10px;">Become a Wholesale Partner</h2>
+      <p style="color: #8c6875; margin-bottom: 25px;">Get access to bulk pricing, exclusive catalog items, and priority shipping.</p>
       
-      <form class="wholesale-form">
-        <input type="text" placeholder="Full Name or Business Name" required>
-        <input type="email" placeholder="Business Email" required>
-        <select required id="wholesaleCategorySelect">
+      <form class="wholesale-form" style="display: flex; flex-direction: column; gap: 15px;">
+        <input type="text" placeholder="Full Name or Business Name" required style="padding: 12px; border: 1px solid #f2c4ce; border-radius: 12px; outline: none;">
+        <input type="email" placeholder="Business Email" required style="padding: 12px; border: 1px solid #f2c4ce; border-radius: 12px; outline: none;">
+        <select required id="wholesaleCategorySelect" style="padding: 12px; border: 1px solid #f2c4ce; border-radius: 12px; outline: none; background: white;">
           <option value="" disabled selected>Primary Interest</option>
           <!-- Dynamically filled with categories -->
         </select>
-        <textarea placeholder="Estimated Monthly Order Volume or Inquiry Details" rows="4"></textarea>
-        <button type="submit" class="btn primary-btn float-on-hover">Apply for Wholesale Account</button>
+        <textarea placeholder="Estimated Monthly Order Volume or Inquiry Details" rows="4" style="padding: 12px; border: 1px solid #f2c4ce; border-radius: 12px; outline: none;"></textarea>
+        <button type="submit" class="btn primary-btn float-on-hover" style="background: #d47a8f; color: white; border: none; padding: 12px; border-radius: 20px; font-weight: bold; cursor: pointer;">Apply for Wholesale Account</button>
       </form>
     </div>
   </section>
@@ -416,7 +438,7 @@
     </svg>
   </a>
 
-  <footer>
+  <footer style="text-align: center; padding: 30px 0; background: rgba(255,255,255,0.7); backdrop-filter: blur(5px); margin-top: 50px;">
     <p>&copy; 2026 Maison de Cess. All rights reserved.</p>
   </footer>
 
@@ -440,7 +462,7 @@
     const geometryList = [
       new THREE.IcosahedronGeometry(1.5, 0),
       new THREE.OctahedronGeometry(1.6, 0),
-      new THREE.CylinderGeometry(0.7, 0.7, 2.2, 32), // Soft pill/capsule shape seen in your screenshot
+      new THREE.CylinderGeometry(0.7, 0.7, 2.2, 32),
       new THREE.TetrahedronGeometry(1.6, 0)
     ];
 
@@ -453,7 +475,7 @@
     ];
 
     const meshes = [];
-    const count = 30; // Perfect amount matching the original background density
+    const count = 30;
     for (let i = 0; i < count; i++) {
       const geom = geometryList[Math.floor(Math.random() * geometryList.length)];
       const mat = materials[Math.floor(Math.random() * materials.length)];
@@ -637,7 +659,7 @@
         const isLiked = likedProducts[productId] ? '❤️' : '🤍';
 
         userProductsGrid.innerHTML += `
-          <div class="product-card float-on-hover" style="background:#ffffff; border:1px solid rgba(232,180,184,0.3); border-radius:16px; padding:12px; display:flex; flex-direction:column; justify-content:space-between; box-shadow:0 8px 25px rgba(82,52,63,0.05); transition:all 0.3s;">
+          <div class="product-card float-on-hover" style="background:rgba(255,255,255,0.95); border:1px solid rgba(232,180,184,0.3); border-radius:16px; padding:12px; display:flex; flex-direction:column; justify-content:space-between; box-shadow:0 8px 25px rgba(82,52,63,0.05); transition:all 0.3s;">
             <button class="like-btn" onclick="toggleLike('${productId}')" title="Save to Wishlist">${isLiked}</button>
             <div>
               <img src="${imgSrc}" onclick="openImageModal('${imgSrc}')" style="width:100%; aspect-ratio: 1/1; object-fit:cover; border-radius:12px; margin-bottom:10px; background:#fbe8eb; cursor:pointer;" alt="${p.name}">
