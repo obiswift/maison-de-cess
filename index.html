@@ -420,7 +420,7 @@
     <p>&copy; 2026 Maison de Cess. All rights reserved.</p>
   </footer>
 
-  <!-- Three.js Interactive Canvas & Soft Pastel Light Crystalline 3D Shapes -->
+  <!-- Three.js Interactive Canvas with Exact Original Soft Crystalline & Pill 3D Shapes -->
   <script>
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
@@ -436,15 +436,15 @@
     pointLight.position.set(20, 20, 20);
     scene.add(pointLight);
 
-    // Soft crystalline geometric shapes like the original design
+    // Exact original shapes: Crystalline crystals, soft floating capsules/pills, and icosahedrons
     const geometryList = [
       new THREE.IcosahedronGeometry(1.5, 0),
       new THREE.OctahedronGeometry(1.6, 0),
-      new THREE.BoxGeometry(1.4, 1.4, 1.4),
+      new THREE.CylinderGeometry(0.7, 0.7, 2.2, 32), // Soft pill/capsule shape seen in your screenshot
       new THREE.TetrahedronGeometry(1.6, 0)
     ];
 
-    // Light pastel and blush crystal materials (NO dark pink)
+    // Soft pastel and blush crystal materials (Light tones only - NO dark pink)
     const materials = [
       new THREE.MeshStandardMaterial({ color: 0xffd1dc, roughness: 0.2, metalness: 0.1, transparent: true, opacity: 0.85 }),
       new THREE.MeshStandardMaterial({ color: 0xffe4e8, roughness: 0.3, metalness: 0.05, transparent: true, opacity: 0.8 }),
@@ -453,7 +453,7 @@
     ];
 
     const meshes = [];
-    const count = 25; // Balanced count for gorgeous crystal look without freezing cursor
+    const count = 30; // Perfect amount matching the original background density
     for (let i = 0; i < count; i++) {
       const geom = geometryList[Math.floor(Math.random() * geometryList.length)];
       const mat = materials[Math.floor(Math.random() * materials.length)];
