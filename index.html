@@ -75,15 +75,14 @@
     .product-card {
       position: relative;
     }
-    /* Drawers & Modals Overlays */
+    /* Drawers & Modals Overlays (Optimized blur removal) */
     .drawer-overlay {
       position: fixed;
       top: 0;
       left: 0;
       width: 100%;
       height: 100%;
-      background: rgba(82, 52, 63, 0.4);
-      backdrop-filter: blur(4px);
+      background: rgba(82, 52, 63, 0.5);
       display: none;
       z-index: 2500;
     }
@@ -144,7 +143,6 @@
       width: 100%;
       height: 100%;
       background: rgba(82, 52, 63, 0.6);
-      backdrop-filter: blur(5px);
       display: none;
       justify-content: center;
       align-items: center;
@@ -182,7 +180,7 @@
   <canvas id="bg-canvas"></canvas>
 
   <!-- Top Announcement Bar with Flag Selector & 3D Rotating Pin Icon -->
-  <div class="top-bar" style="display: flex; justify-content: space-between; align-items: center; padding: 6px 5%;">
+  <div class="top-bar" style="display: flex; justify-content: space-between; align-items: center; padding: 6px 5%; background: #fff5f7;">
     <p style="margin: 0;">Free countrywide delivery on retail orders over KSh 5,000 | Bulk discounts for wholesale buyers!</p>
     <div style="cursor: pointer; font-size: 0.85rem; font-weight: 600; display: flex; align-items: center; gap: 6px;" onclick="openLocationModal()">
       <span id="selectedFlag">🇰🇪</span> <span id="selectedLocationText">Kenya</span> 
@@ -196,8 +194,8 @@
     </div>
   </div>
 
-  <!-- Navigation Bar with Integrated Search Bar -->
-  <header class="navbar" style="display: flex; align-items: center; justify-content: space-between; padding: 15px 5%; background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(255, 182, 193, 0.3); position: sticky; top: 0; z-index: 100;">
+  <!-- Navigation Bar with Integrated Search Bar (Optimized solid background) -->
+  <header class="navbar" style="display: flex; align-items: center; justify-content: space-between; padding: 15px 5%; background: rgba(255, 255, 255, 0.98); border-bottom: 1px solid rgba(255, 182, 193, 0.3); position: sticky; top: 0; z-index: 100;">
     
     <!-- Left: Logo & Brand Name -->
     <div class="logo" style="display: flex; align-items: center; gap: 10px; font-size: 1.5rem; font-weight: 700; letter-spacing: 2px; color: #724e5b; white-space: nowrap;">
@@ -286,7 +284,7 @@
     <div>
       
       <!-- Left Vertical Category Sidebar (Sticky) -->
-      <aside class="category-sidebar" style="background: rgba(255, 255, 255, 0.98); backdrop-filter: blur(10px); border-radius: 16px; border: 1px solid rgba(232, 180, 184, 0.4); box-shadow: 0 8px 32px rgba(82, 52, 63, 0.08); overflow: hidden; padding: 12px;">
+      <aside class="category-sidebar" style="background: rgba(255, 255, 255, 0.98); border-radius: 16px; border: 1px solid rgba(232, 180, 184, 0.4); box-shadow: 0 8px 32px rgba(82, 52, 63, 0.08); overflow: hidden; padding: 12px;">
         <div style="background: #d47a8f; color: white; padding: 10px 14px; border-radius: 12px; font-weight: 700; font-size: 0.95rem; display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
           Categories
         </div>
@@ -325,12 +323,12 @@
   </section>
 
   <!-- Image Zoom Modal -->
-  <div id="imageModal" style="display:none; position:fixed; z-index:2000; top:0; left:0; width:100%; height:100%; background:rgba(82,52,63,0.85); backdrop-filter:blur(6px); justify-content:center; align-items:center;">
+  <div id="imageModal" style="display:none; position:fixed; z-index:2000; top:0; left:0; width:100%; height:100%; background:rgba(82,52,63,0.9); justify-content:center; align-items:center;">
     <span onclick="closeImageModal()" style="position:absolute; top:25px; right:40px; color:#fff; font-size:45px; font-weight:bold; cursor:pointer; transition:color 0.3s;" onmouseover="this.style.color='#d47a8f'" onmouseout="this.style.color='#fff'">&times;</span>
     <img id="modalImage" style="max-width:90%; max-height:85vh; border-radius:16px; box-shadow: 0 15px 40px rgba(0,0,0,0.4);">
   </div>
 
-  <!-- Sign In / Registration Modal (With Full Name, Email, Password & Real Google Auth) -->
+  <!-- Sign In / Registration Modal -->
   <div class="modal-container" id="authModal">
     <div class="modal-content">
       <span onclick="closeAuthModal()" style="position:absolute; top:15px; right:20px; font-size:22px; cursor:pointer; color:#724e5b;">&times;</span>
@@ -422,14 +420,14 @@
     <p>&copy; 2026 Maison de Cess. All rights reserved.</p>
   </footer>
 
-  <!-- Three.js Interactive Canvas & Dynamic Data Connection Script -->
+  <!-- Three.js Interactive Canvas & Dynamic Data Connection Script (Optimized) -->
   <script>
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
     const renderer = new THREE.WebGLRenderer({ canvas: document.getElementById('bg-canvas'), alpha: true, antialias: true });
     
     renderer.setSize(window.innerWidth, window.innerHeight);
-    renderer.setPixelRatio(window.devicePixelRatio);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2)); // Capped pixel ratio for performance
 
     const ambientLight = new THREE.AmbientLight(0xfff0f3, 1.2);
     scene.add(ambientLight);
@@ -455,7 +453,7 @@
     ];
 
     const meshes = [];
-    const count = 35;
+    const count = 15; // Optimized count to prevent cursor lag/freezing
     for (let i = 0; i < count; i++) {
       const geom = geometryList[Math.floor(Math.random() * geometryList.length)];
       const mat = materials[Math.floor(Math.random() * materials.length)];
@@ -473,13 +471,12 @@
 
       scene.add(mesh);
       
-      // Store individual drift properties for smooth floating across the screen
       meshes.push({ 
         mesh, 
-        speedX: (Math.random() - 0.5) * 0.0015, // Slow axis rotation speed X
-        speedY: (Math.random() - 0.5) * 0.0015, // Slow axis rotation speed Y
-        driftX: (Math.random() - 0.5) * 0.008,  // Slow drifting speed across X axis
-        driftY: (Math.random() - 0.5) * 0.008,  // Slow drifting speed across Y axis
+        speedX: (Math.random() - 0.5) * 0.0015,
+        speedY: (Math.random() - 0.5) * 0.0015,
+        driftX: (Math.random() - 0.5) * 0.008,
+        driftY: (Math.random() - 0.5) * 0.008,
         limitX: spreadX / 2,
         limitY: spreadY / 2
       });
@@ -496,17 +493,13 @@
     function animate() {
       requestAnimationFrame(animate);
 
-      // Animate rotation on axis AND positional drift across the screen
       meshes.forEach((item) => {
-        // Spin slowly on own axis
         item.mesh.rotation.x += item.speedX;
         item.mesh.rotation.y += item.speedY;
 
-        // Move across the screen
         item.mesh.position.x += item.driftX;
         item.mesh.position.y += item.driftY;
 
-        // Loop them back gracefully when they drift past the boundaries
         if (item.mesh.position.x > item.limitX) item.mesh.position.x = -item.limitX;
         if (item.mesh.position.x < -item.limitX) item.mesh.position.x = item.limitX;
         if (item.mesh.position.y > item.limitY) item.mesh.position.y = -item.limitY;
@@ -548,14 +541,12 @@
         document.getElementById('authLinkText').textContent = currentUser.name || currentUser.email.split('@')[0];
       }
 
-      // Initialize Google Identity Services SDK and render official Google buttons
       if (window.google) {
         google.accounts.id.initialize({
           client_id: "507277077426-ih6bvqfml0m0lr39h80d6g34dlhkmvec.apps.googleusercontent.com",
           callback: handleGoogleCredentialResponse
         });
 
-        // Render button in dropdown menu
         const dropdownContainer = document.getElementById('googleButtonDropdownContainer');
         if (dropdownContainer) {
           google.accounts.id.renderButton(dropdownContainer, {
@@ -565,7 +556,6 @@
           });
         }
 
-        // Render button in modal popup
         const modalContainer = document.getElementById('googleButtonModalContainer');
         if (modalContainer) {
           google.accounts.id.renderButton(modalContainer, {
@@ -667,7 +657,6 @@
       });
     }
 
-    // Database Sync for Registered Users
     async function syncUserToDatabase(userData) {
       try {
         await fetch(USERS_API_URL, {
@@ -680,7 +669,6 @@
       }
     }
 
-    // Real Google JWT Token Decoder
     function parseJwt(token) {
       try {
         const base64Url = token.split('.')[1];
@@ -710,7 +698,6 @@
       }
     }
 
-    // Kilimall Dropdown Toggle
     function toggleUserDropdown() {
       const menu = document.getElementById('userDropdownMenu');
       const loggedInDiv = document.getElementById('loggedInOptions');
@@ -742,7 +729,6 @@
       }
     });
 
-    // Email Sign In with Form Input Fields
     async function handleSignIn(e) {
       e.preventDefault();
       const name = document.getElementById('authName').value.trim();
@@ -756,7 +742,6 @@
       
       await syncUserToDatabase(currentUser);
       
-      // Clear input fields
       document.getElementById('authName').value = '';
       document.getElementById('authEmail').value = '';
       document.getElementById('authPassword').value = '';
@@ -765,7 +750,6 @@
       alert('Successfully signed in and registered!');
     }
 
-    // Geolocation API Integration
     function openLocationModal() {
       if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(
@@ -813,7 +797,6 @@
       closeLocationModal();
     }
 
-    // Wishlist & Cart handlers
     function openAuthModal() { document.getElementById('authModal').style.display = 'flex'; }
     function closeAuthModal() { document.getElementById('authModal').style.display = 'none'; }
     
@@ -926,7 +909,6 @@
       }
     };
 
-    // Updated Buy Now Button Handler (Includes Color Selection & Live Quantity Multiplier)
     window.buyNowEvent = function(index) {
       if (!currentUser) { 
         openAuthModal(); 
@@ -942,7 +924,7 @@
         };
 
         const modalHTML = `
-          <div id="buyNowModal" style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(82,52,63,0.5); backdrop-filter:blur(4px); display:flex; justify-content:center; align-items:center; z-index:5000;">
+          <div id="buyNowModal" style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(82,52,63,0.5); display:flex; justify-content:center; align-items:center; z-index:5000;">
             <div style="background:white; padding:30px; border-radius:20px; max-width:480px; width:90%; position:relative; box-shadow:0 15px 40px rgba(82,52,63,0.2);">
               <span onclick="closeBuyNowModal()" style="position:absolute; top:15px; right:20px; font-size:24px; cursor:pointer; color:#724e5b;">&times;</span>
               
@@ -991,7 +973,6 @@
       }
     };
 
-    // Live Multiplier for Quantity Changes
     window.updateModalTotal = function(unitPrice) {
       const qtyInput = document.getElementById('quickBuyQty');
       const totalDisplay = document.getElementById('modalTotalPriceDisplay');
